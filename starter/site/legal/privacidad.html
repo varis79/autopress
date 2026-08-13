@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es" data-style="editorial" data-palette="warm" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Privacidad · El Radar Semanal</title>
+<meta name="description" content="Privacidad">
+<link rel="canonical" href="https://tudominio.example/legal/privacidad.html">
+<link rel="alternate" type="application/rss+xml" href="/rss.xml">
+<style>
+/* Autopress · sistema de themes
+   Dos ejes independientes: ESTILO (estructura + tipografía) y PALETA (color).
+   data-style / data-palette / data-theme(light|dark) en el elemento raíz.
+   6 estilos × 5 paletas = 30 combinaciones. System fonts self-hosted: cero
+   peticiones a terceros. */
+
+/* ===== Tokens base ===== */
+:root{
+  --maxw:720px; --space:1rem; --radius:10px;
+  --font-head:Georgia,'Times New Roman',serif; --font-body:Georgia,serif;
+  --head-weight:700; --head-tracking:0; --title-size:2.3rem; --lede:1.06rem;
+  --card-radius:var(--radius); --card-border-w:1px; --upper:none;
+  --bg:#fff; --fg:#141414; --muted:#6b6b6b; --accent:#c0271e; --accent2:#f0663e;
+  --border:#e6e6e6; --card:#fafafa;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);
+  line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:calc(var(--space)*2.4) var(--space)}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* kicker/overline en color de acento — inyecta color y jerarquía */
+.kicker{font-family:var(--font-body);font-size:.72rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 .35rem}
+
+.masthead{position:relative;display:flex;justify-content:space-between;align-items:baseline;
+  gap:1rem;flex-wrap:wrap;padding-bottom:.7rem;margin-bottom:1.7rem;border-bottom:1px solid var(--border)}
+.masthead::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:min(120px,40%);
+  background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.masthead h1{font-family:var(--font-head);font-weight:var(--head-weight);
+  letter-spacing:var(--head-tracking);text-transform:var(--upper);font-size:1.25rem;margin:0}
+.masthead .date{color:var(--muted);font-size:.85rem}
+.stub{display:inline-block;font-size:.66rem;border:1px solid var(--accent);color:var(--accent);
+  border-radius:999px;padding:.05rem .5rem;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle}
+
+.cover{margin:1.7rem 0 2.2rem}
+.cover h2{font-family:var(--font-head);font-weight:var(--head-weight);letter-spacing:var(--head-tracking);
+  text-transform:var(--upper);font-size:var(--title-size);line-height:1.07;margin:.15rem 0 .55rem;color:var(--accent)}
+.cover .deck{font-size:var(--lede);margin:0;color:var(--muted)}
+
+.stories{display:grid;gap:1rem}
+.card{background:var(--card);border:var(--card-border-w) solid var(--border);
+  border-radius:var(--card-radius);padding:1.05rem 1.15rem;transition:border-color .15s,transform .15s,box-shadow .15s}
+.card:hover{border-color:var(--accent)}
+.card h3{font-family:var(--font-head);font-weight:var(--head-weight);letter-spacing:var(--head-tracking);
+  text-transform:var(--upper);margin:0 0 .45rem;font-size:1.16rem;line-height:1.2;transition:color .15s}
+.card:hover h3{color:var(--accent)}
+.card p{margin:0 0 .7rem;color:var(--fg)}
+.meta{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;font-size:.76rem;color:var(--muted)}
+.tag{border:1px solid var(--border);border-radius:999px;padding:.05rem .55rem;text-transform:uppercase;letter-spacing:.05em}
+.src{margin-left:auto;font-weight:600}
+.cites{font-size:.7em;font-weight:700;white-space:nowrap;margin-left:.15em}
+.cites a{color:var(--accent);text-decoration:none;padding:0 .04em}
+.cites a:hover{text-decoration:underline}
+
+/* caja de suscripción — con degradado sutil + botón en degradado */
+.nl{position:relative;overflow:hidden;margin:2.2rem 0 1rem;padding:1.5rem 1.4rem;
+  border-radius:calc(var(--card-radius) + 4px);background:var(--card);border:1px solid var(--border)}
+.nl::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));opacity:.09;pointer-events:none}
+.nl > *{position:relative}
+.nl-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);margin:0 0 .3rem}
+.nl-title{font-family:var(--font-head);font-weight:var(--head-weight);margin:0 0 .85rem;font-size:1.3rem;line-height:1.15}
+.nl-form{display:flex;gap:.5rem;flex-wrap:wrap}
+.nl-input{flex:1;min-width:12rem;padding:.62rem .85rem;border-radius:9px;border:1px solid var(--border);
+  background:var(--bg);color:var(--fg);font:inherit}
+.nl-btn{padding:.62rem 1.2rem;border-radius:9px;border:0;font:inherit;font-weight:700;cursor:pointer;
+  color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 18px -8px var(--accent)}
+.nl-btn:hover{filter:brightness(1.07)}
+.nl-note{margin:.65rem 0 0;font-size:.75rem;color:var(--muted)}
+
+footer.site{margin-top:2.4rem;border-top:1px solid var(--border);padding-top:1rem;color:var(--muted);font-size:.8rem}
+.topbar{display:flex;gap:1rem;align-items:baseline;justify-content:space-between;
+  padding-bottom:.7rem;margin-bottom:.2rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.topbar .brand{font-family:var(--font-head);font-weight:var(--head-weight);
+  letter-spacing:var(--head-tracking);text-transform:var(--upper);font-size:1rem;color:var(--fg)}
+.topbar nav{display:flex;gap:1rem;font-size:.85rem}
+.topbar nav a{color:var(--muted)} .topbar nav a[aria-current]{color:var(--accent);font-weight:700}
+
+/* ===== ESTILOS ===== */
+[data-style="editorial"]{
+  --font-head:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --font-body:'Iowan Old Style',Georgia,serif;
+  --title-size:2.6rem; --head-tracking:-.01em; --card-radius:7px; --lede:1.14rem;
+}
+[data-style="editorial"] .cover h2{color:var(--fg)}  /* clásico: portada en tinta */
+[data-style="editorial"] .cover h2::first-letter{color:var(--accent)}
+
+[data-style="modern"]{
+  --font-head:'Helvetica Neue',Helvetica,Arimo,system-ui,Arial,sans-serif;
+  --font-body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --title-size:3.1rem; --head-weight:800; --head-tracking:-.035em; --lede:1.15rem;
+  --card-border-w:0; --card-radius:0;
+}
+[data-style="modern"] .masthead::after{width:100%;height:3px}
+[data-style="modern"] .cover h2{line-height:1.0}
+[data-style="modern"] .card{background:transparent;border:0;border-top:2px solid var(--border);padding:1.15rem 0}
+[data-style="modern"] .card:hover{border-color:var(--accent)}
+[data-style="modern"] .card h3{font-size:1.4rem}
+
+[data-style="technical"]{
+  --font-head:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  --font-body:ui-monospace,Menlo,Consolas,monospace;
+  --title-size:1.9rem; --head-weight:600; --head-tracking:-.02em; --lede:.98rem;
+  --radius:4px; --card-radius:4px; --maxw:770px;
+}
+[data-style="technical"] body{line-height:1.55}
+[data-style="technical"] .masthead h1,[data-style="technical"] .tag,[data-style="technical"] .src,
+[data-style="technical"] .kicker{text-transform:uppercase}
+[data-style="technical"] .kicker::before{content:"// "}
+[data-style="technical"] .card{border-left:3px solid var(--accent)}
+[data-style="technical"] .cover h2::before{content:"▚ ";color:var(--accent);opacity:.7}
+
+[data-style="magazine"]{
+  --font-head:'Hoefler Text',Didot,'Bodoni MT',Garamond,Georgia,serif;
+  --font-body:Georgia,'Times New Roman',serif;
+  --title-size:3.4rem; --head-weight:600; --head-tracking:-.012em; --lede:1.22rem;
+  --maxw:760px; --card-border-w:0; --card-radius:0;
+}
+[data-style="magazine"] .cover h2{line-height:1.0}
+[data-style="magazine"] .cover .deck{font-style:italic}
+[data-style="magazine"] .card{background:transparent;border:0;border-top:1px solid var(--fg);padding:1.25rem 0 .5rem}
+[data-style="magazine"] .card h3{font-size:1.55rem;font-weight:600}
+
+[data-style="minimal"]{
+  --font-head:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --title-size:1.95rem; --head-weight:600; --head-tracking:-.01em; --lede:1rem; --maxw:600px;
+  --card-border-w:0; --card-radius:0;
+}
+[data-style="minimal"] .masthead::after{display:none}
+[data-style="minimal"] .masthead h1{font-weight:600;font-size:1rem}
+[data-style="minimal"] .cover h2{color:var(--fg)}
+[data-style="minimal"] .stories{gap:0}
+[data-style="minimal"] .card{background:transparent;border:0;border-bottom:1px solid var(--border);padding:1.4rem 0}
+[data-style="minimal"] .card:hover{border-color:var(--border)}
+[data-style="minimal"] .card h3{font-size:1.05rem;font-weight:600}
+
+[data-style="newsprint"]{
+  --font-head:Georgia,'Times New Roman',Times,serif; --font-body:Georgia,'Times New Roman',Times,serif;
+  --title-size:2.2rem; --head-weight:800; --head-tracking:-.01em; --lede:1rem; --maxw:880px;
+  --card-radius:0; --card-border-w:1px;
+}
+[data-style="newsprint"] body{line-height:1.5}
+[data-style="newsprint"] .masthead h1{text-transform:uppercase;letter-spacing:.02em}
+[data-style="newsprint"] .cover h2{color:var(--fg)}
+[data-style="newsprint"] .stories{grid-template-columns:1fr 1fr;gap:0 1.5rem}
+[data-style="newsprint"] .card{border:0;border-top:1px solid var(--fg);padding:.9rem 0;background:transparent}
+[data-style="newsprint"] .card:hover{border-color:var(--fg)}
+[data-style="newsprint"] .card h3{font-size:1.05rem} [data-style="newsprint"] .card p{font-size:.92rem}
+@media(max-width:600px){[data-style="newsprint"] .stories{grid-template-columns:1fr}}
+
+/* ===== PALETAS (claro) — cada una con --accent2 para los degradados ===== */
+[data-palette="ink"]{--bg:#fff;--fg:#141414;--muted:#6b6b6b;--accent:#c0271e;--accent2:#f0663e;--border:#e6e6e6;--card:#fafafa}
+[data-palette="warm"]{--bg:#f5f1e8;--fg:#2a2622;--muted:#8a8072;--accent:#b4532a;--accent2:#d98b3f;--border:#e3dbca;--card:#fffdf8}
+[data-palette="cool"]{--bg:#f4f6f9;--fg:#1a2230;--muted:#5c6b7f;--accent:#2563b8;--accent2:#38bdf8;--border:#dde3ea;--card:#fbfcfd}
+[data-palette="forest"]{--bg:#f1f4ee;--fg:#1f2a22;--muted:#5e6d5e;--accent:#2f6b3f;--accent2:#7cc06a;--border:#dde3d6;--card:#fbfcf8}
+[data-palette="signal"]{--bg:#faf9fb;--fg:#101014;--muted:#6a6a75;--accent:#e5004c;--accent2:#ff6a2b;--border:#ececef;--card:#fff}
+
+/* ===== PALETAS (oscuro · por toggle) ===== */
+[data-theme="dark"][data-palette="ink"]{--bg:#0c0c0d;--fg:#ededed;--muted:#9a9a9a;--accent:#ff5a4d;--accent2:#ff9166;--border:#232325;--card:#161617}
+[data-theme="dark"][data-palette="warm"]{--bg:#1e1b17;--fg:#ece6da;--muted:#a99f8d;--accent:#e0824f;--accent2:#f0b072;--border:#332d24;--card:#262119}
+[data-theme="dark"][data-palette="cool"]{--bg:#0d1117;--fg:#e6edf3;--muted:#8b98a8;--accent:#5b9bff;--accent2:#7ad0ff;--border:#232a33;--card:#141a22}
+[data-theme="dark"][data-palette="forest"]{--bg:#0f1512;--fg:#e7efe6;--muted:#8ba08b;--accent:#4fae6a;--accent2:#8ed88a;--border:#222b24;--card:#151d17}
+[data-theme="dark"][data-palette="signal"]{--bg:#08080a;--fg:#f0f0f2;--muted:#8a8a95;--accent:#ff3d81;--accent2:#ff8a3d;--border:#1c1c22;--card:#131317}
+
+/* Signal: portada con degradado (su firma) — solo la portada, no las cards (legibilidad) */
+[data-palette="signal"] .cover h2{
+  background:linear-gradient(115deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+@media(max-width:600px){ .wrap{padding:1.4rem 1rem} .cover h2{font-size:calc(var(--title-size)*.78)} }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="/">El Radar Semanal</a>
+    <nav><a href="/">Última</a><a href="/archive.html">Archivo</a><a href="/rss.xml">RSS</a></nav>
+  </header>
+<article class="legal"><h1>Política de privacidad — &lt;NOMBRE_MEDIO&gt;</h1>
+<blockquote>⚠️ <strong>PLANTILLA — no es asesoría legal.</strong> Adáptala a tu jurisdicción (esta base se apoya</blockquote>
+<blockquote>en el RGPD/ePrivacy de la UE, que suele ser el estándar más exigente). Si tu público está</blockquote>
+<blockquote>en la UE o monetizas, revísala con un profesional. Rellena los <code>&lt;PLACEHOLDER&gt;</code>.</blockquote>
+<p>_Última actualización: &lt;FECHA&gt;._</p>
+<h2>Quién es el responsable</h2>
+<p>El responsable del tratamiento de tus datos es <strong>&lt;RESPONSABLE&gt;</strong> (&lt;NOMBRE_MEDIO&gt;), con domicilio en &lt;DOMICILIO_O_PAIS&gt; y correo de contacto <strong>&lt;EMAIL_CONTACTO&gt;</strong>.</p>
+<h2>Qué datos tratamos y para qué</h2>
+<ul><li><strong>Suscripción a la newsletter:</strong> tu <strong>dirección de email</strong>, con la única finalidad de</li></ul>
+<p>enviarte el boletín. No pedimos más datos.</p>
+<ul><li><strong>Datos técnicos mínimos</strong> que genera cualquier visita (dirección IP, tipo de navegador)</li></ul>
+<p>en los registros del <strong>host</strong>. No usamos analítica invasiva ni perfilado publicitario.</p>
+<p>No vendemos tus datos ni los cedemos, salvo a los proveedores necesarios para prestar el servicio (abajo) o por obligación legal.</p>
+<h2>Base legal</h2>
+<ul><li>Newsletter: <strong>tu consentimiento</strong> (te suscribes tú, con <strong>doble opt-in</strong>: confirmas desde</li></ul>
+<p>un email). Puedes retirarlo cuando quieras.</p>
+<ul><li>Registros técnicos: <strong>interés legítimo</strong> en operar y proteger el sitio.</li></ul>
+<h2>Encargados del tratamiento (proveedores)</h2>
+<ul><li><strong>&lt;PROVEEDOR_NEWSLETTER&gt;</strong> (envío de la newsletter).</li><li><strong>&lt;PROVEEDOR_HOSTING&gt;</strong> (alojamiento del sitio).</li></ul>
+<p>Estos proveedores tratan datos por cuenta nuestra y bajo contrato. Pueden estar fuera de tu país; en ese caso se aplican las garantías de transferencia correspondientes.</p>
+<h2>Cuánto tiempo los conservamos</h2>
+<p>Tu email, <strong>hasta que te des de baja</strong>. Los registros técnicos, el tiempo que fije el host.</p>
+<h2>Tus derechos</h2>
+<p>Puedes <strong>acceder, rectificar, suprimir, oponerte, limitar y portar</strong> tus datos, y **retirar el consentimiento<strong> en cualquier momento (cada correo lleva enlace de </strong>baja de un clic**). Para ejercerlos, escribe a <strong>&lt;EMAIL_CONTACTO&gt;</strong>. Si crees que no te atendemos bien, puedes reclamar ante tu autoridad de protección de datos.</p>
+<h2>Cookies</h2>
+<p>Este sitio <strong>no usa cookies de seguimiento ni de terceros</strong> por defecto. Si en el futuro se añaden, se pedirá tu consentimiento previo y se detallará aquí.</p>
+<h2>Cambios</h2>
+<p>Podemos actualizar esta política; publicaremos la nueva versión aquí con su fecha.</p></article>
+  <footer class="site">
+    Contenido redactado con asistencia de IA · Hecho con <a href="https://evaristobabe.com/resources/autopress" rel="noopener">Autopress</a>
+    <nav class="legal"><a href="/legal/privacidad.html">Privacidad</a> · <a href="/legal/ia.html">IA</a> · <a href="/legal/fuentes.html">Fuentes</a> · <a href="/legal/terminos.html">Términos</a></nav>
+  </footer>
+</div>
+</body>
+</html>

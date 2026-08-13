@@ -1,0 +1,45 @@
+{
+  "as_of": "2026-08-10",
+  "taxonomy": {
+    "topics": {
+      "regulation": ["regulation", "law", "compliance", "regulator"],
+      "technology": ["software", "platform", "automation", "ai"],
+      "funding": ["funding", "round", "investment", "raises"]
+    },
+    "priority_topics": ["regulation", "funding"],
+    "markets": {
+      "mx": {"tier": "primary", "keywords": ["mexico", "mexican", "cdmx"]},
+      "es": {"tier": "primary", "keywords": ["spain", "spanish", "madrid"]},
+      "us": {"tier": "secondary", "keywords": ["united states", "american"]}
+    },
+    "players": {"Acme": ["acme"], "Globex": ["globex"]}
+  },
+  "dedupe": {"title_similarity_threshold": 0.82},
+  "selection": {
+    "competitor_blacklist": ["initech"],
+    "scoring": {
+      "topic_match": 1.0,
+      "topic_priority_boost": 0.5,
+      "market_primary": 1.2,
+      "market_secondary": 0.4,
+      "market_tertiary": 0.3,
+      "market_other": 0.15,
+      "players_base": 0.5,
+      "players_extra": 0.1,
+      "players_max_extra": 3,
+      "recency_max_bonus": 2.0,
+      "recency_decay_per_day": 0.2
+    },
+    "geo_quotas": {"primary": [0, 5], "secondary": [0, 2], "other": [0, 2]},
+    "topic_quotas": {}
+  },
+  "modes": {"target_normal": 5, "min_normal": 4, "min_short": 2},
+  "compose": {"model": "claude-sonnet-5", "max_tokens": 8000},
+  "site": {
+    "name": "El Radar Semanal",
+    "tagline": "Lo que importó esta semana",
+    "domain": "https://tudominio.example",
+    "language": "es",
+    "theme": {"style": "editorial", "palette": "warm"}
+  }
+}

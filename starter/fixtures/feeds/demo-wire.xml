@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Demo Wire</title>
+    <link>https://demo.example</link>
+    <description>Feed RSS de ejemplo para probar el ingest</description>
+    <item>
+      <title>Regulator approves new compliance law in Mexico</title>
+      <link>https://demo.example/n1?utm_source=rss&amp;utm_medium=feed</link>
+      <description>&lt;p&gt;The &lt;b&gt;regulator&lt;/b&gt; in Mexico approved a new compliance law.&lt;/p&gt;</description>
+      <pubDate>Sat, 09 Aug 2026 08:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Acme raises a funding round in Spain</title>
+      <link>https://demo.example/n2</link>
+      <description>Acme secures investment from investors in Madrid.</description>
+      <pubDate>Fri, 08 Aug 2026 09:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Old news from last month</title>
+      <link>https://demo.example/n3</link>
+      <description>This item is outside the lookback window and must be dropped.</description>
+      <pubDate>Tue, 01 Jul 2026 09:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

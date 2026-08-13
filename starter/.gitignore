@@ -1,0 +1,22 @@
+# Secretos — NUNCA subir (todas las variantes .env, salvo el ejemplo)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Nota: `site/` (HTML renderizado) y `data/editions/` (histórico) SÍ se versionan:
+# el CI los genera y el host sirve el `site/` ya renderizado (no re-ejecuta la IA).
+# Los previews locales también escriben en site/; puedes no commitearlos.
+
+# Artefactos temporales
+status.json
+
+# Logs de operación (se generan en cada run; en CI se suben como artefacto)
+/data/operations/*.json
+
+# SO
+.DS_Store

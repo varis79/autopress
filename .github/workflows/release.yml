@@ -1,0 +1,44 @@
+name: release
+
+# Publica una versión al empujar un tag `vX.Y.Z`:
+#   1) corre los tests del starter,
+#   2) empaqueta el template con pack.py (aplana starter/ → raíz),
+#   3) crea la Release de GitHub con el ZIP versionado adjunto.
+#
+# Flujo para publicar:  git tag v0.5.0 && git push origin v0.5.0
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write        # necesario para crear la Release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias del starter
+        run: python -m pip install -r starter/requirements.txt
+
+      - name: Tests (65+) dentro del starter
+        working-directory: starter
+        run: PYTHONPATH=. python -m unittest discover tests
+
+      - name: Empaquetar el template (ZIP versionado)
+        run: python pack.py "autopress-${GITHUB_REF_NAME}"
+
+      - name: Crear la Release con el ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            "autopress-${GITHUB_REF_NAME}.zip" \
+            --title "Autopress ${GITHUB_REF_NAME}" \
+            --notes "Descarga \`autopress-${GITHUB_REF_NAME}.zip\`, descomprímelo y ábrelo con tu agente de código (Claude Code / Cursor / Codex). Guía y cambios en el repo (CHANGELOG.md)."

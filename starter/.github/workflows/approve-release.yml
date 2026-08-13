@@ -1,0 +1,41 @@
+# Autopress · aprobar y publicar al mergear la revisión
+# ------------------------------------------------------
+# Cierra el bucle review/strict: cuando MERGEAS la PR (push a main), el merge humano ES la
+# aprobación → `promote` aprueba las ediciones needs_review que pasen los gates (revalidando
+# config/QA/quality/legal/taxonomía) y reconstruye el sitio ya indexable.
+
+name: Aprobar edición revisada
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/editions/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: approve-release
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements.txt
+      - name: Aprobar lo revisado y reconstruir
+        run: PYTHONPATH=. python -m scripts.promote --config config.json
+      - name: Commit del sitio aprobado
+        run: |
+          git config user.name "autopress-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/editions site
+          git commit -m "publicar edición aprobada" || { echo "sin cambios"; exit 0; }
+          git push

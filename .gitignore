@@ -1,0 +1,19 @@
+# Artefactos de build (el ZIP del template lo genera pack.py / la Action)
+/autopress-template/
+/autopress-template.zip
+/autopress-v*/
+/autopress-v*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secretos / entorno (NUNCA al repo)
+.env
+starter/.env
+*.local
+
+# Salidas transitorias del pipeline (se regeneran)
+starter/data/operations/*.json

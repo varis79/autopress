@@ -1,0 +1,95 @@
+# Autopress · publicación automática de la edición
+# --------------------------------------------------
+# Corre el pipeline cada semana (y a mano con el botón). El compose con IA se ejecuta
+# AQUÍ una sola vez (con tu clave en Secrets); el host solo sirve el `site/` renderizado.
+#
+# Requisitos:
+#   1. Este repo = la raíz del proyecto (scripts/, config.json, requirements.txt… en la RAÍZ,
+#      y este workflow en `.github/workflows/`; GitHub solo lo reconoce en la raíz del repo).
+#   2. Crea tu config de producción `config.json` (con el bloque `sources`) en la raíz.
+#   3. En GitHub → Settings → Secrets and variables → Actions, añade `ANTHROPIC_API_KEY`.
+#   4. Para review/strict (abre PR): Settings → Actions → General → "Workflow permissions" →
+#      marca "Allow GitHub Actions to create and approve pull requests" (desactivado por defecto).
+#   5. Los workflows programados se DESACTIVAN tras 60 días sin actividad en el repo: haz commits
+#      (o re-actívalo en la pestaña Actions) para mantener el cron vivo.
+#
+# Comportamiento según `risk_profile` de tu config:
+#   - auto           → publica solo (commit a main; el host redepliega).
+#   - review/strict  → abre un PR para que revises y hagas merge (no publica hasta entonces).
+#   - stub/pausa/QA bloqueada → el job FALLA y no publica nada.
+
+name: Publicar edición
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"      # lunes 06:00 UTC (ajústalo)
+  workflow_dispatch: {}        # botón "Run workflow" para lanzarlo a mano
+
+permissions:
+  contents: write              # commitear data/editions + site
+  pull-requests: write         # abrir PR en review/strict
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15          # nunca dejar el job colgado consumiendo minutos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements.txt
+
+      - name: Comprobaciones (tests + validación) ANTES de gastar en el modelo
+        run: |
+          PYTHONPATH=. python -m unittest discover tests
+          PYTHONPATH=. python -m scripts.validate_config config.json
+
+      - name: Generar la edición (compose con IA, una vez)
+        id: build
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AUTOPRESS_ENV: production
+        run: |
+          set -o pipefail
+          PYTHONPATH=. python -m scripts.pipeline --config config.json --production | tee status.json
+          echo "pending_review=$(jq -r '.pending_review // false' status.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Publicar (risk_profile=auto)
+        if: steps.build.outputs.pending_review == 'false'
+        run: |
+          git config user.name "autopress-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/editions site
+          git commit -m "edición semanal $(date -u +%F)" || { echo "sin cambios"; exit 0; }
+          git push
+
+      - name: Abrir PR de revisión (risk_profile=review/strict)
+        if: steps.build.outputs.pending_review == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          add-paths: |
+            data/editions
+            site
+          branch: edicion-${{ github.run_id }}
+          delete-branch: true
+          title: "Revisar edición semanal"
+          body: |
+            Edición generada en modo **review/strict** (pendiente de revisión humana).
+            Revisa el contenido y **haz merge** para publicarla. Si algo no cuadra, cierra el PR.
+          commit-message: "edición pendiente de revisión"
+
+      - name: Subir el reporte de operación (siempre)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operation-report
+          path: data/operations/latest.json
+          if-no-files-found: ignore

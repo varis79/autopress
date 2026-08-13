@@ -1,0 +1,11 @@
+{
+  "mode": "normal",
+  "count": 5,
+  "stories": [
+    {"id": "i2", "topic": "funding", "market": "es", "players": ["Acme"], "score": 4.8},
+    {"id": "i1", "topic": "regulation", "market": "mx", "players": [], "score": 4.5},
+    {"id": "i4", "topic": "technology", "market": "mx", "players": ["Globex"], "score": 3.9},
+    {"id": "i8", "topic": "regulation", "market": "es", "players": [], "score": 3.5},
+    {"id": "i7", "topic": "funding", "market": null, "players": [], "score": 3.45}
+  ]
+}

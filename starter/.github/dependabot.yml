@@ -1,0 +1,12 @@
+# Mantiene al día las GitHub Actions y las dependencias de Python (avisa de versiones/SHA).
+# Recomendado además: fijar las Actions por SHA completo (referencia inmutable) y proteger `main`.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"

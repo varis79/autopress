@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://autopress.dev/autopress.schema.json",
+  "title": "Autopress config",
+  "description": "Contrato de configuración de un medio Autopress. Un config que no valide contra este esquema NO debe ejecutarse. El núcleo editorial (taxonomy/selection/modes) es obligatorio; gobernanza y stack son opcionales con defaults seguros.",
+  "type": "object",
+  "required": ["taxonomy", "selection", "modes"],
+  "additionalProperties": false,
+  "properties": {
+    "as_of": {
+      "type": "string",
+      "description": "Fecha de referencia (YYYY-MM-DD) para recency. En producción la fija el pipeline; en fixtures es fija para reproducibilidad.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "site": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "tagline": {"type": "string"},
+        "domain": {"type": "string"},
+        "language": {"type": "string"},
+        "timezone": {"type": "string", "description": "Huso horario de referencia (IANA, p. ej. Europe/Madrid)."},
+        "publisher": {"type": "string"},
+        "theme": {"type": "object"}
+      }
+    },
+    "risk_profile": {
+      "type": "string",
+      "enum": ["auto", "review", "strict"],
+      "default": "review",
+      "description": "Controla la publicación de verdad: auto = auto-merge; review (default) = abre PR y para; strict = revisión humana + doble fuente + ventana de enfriamiento."
+    },
+    "editorial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["independent", "sponsored"],
+          "default": "independent",
+          "description": "Caso base independiente. El módulo comercial solo se carga con mode=sponsored."
+        },
+        "ai_disclosure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Declara públicamente que el contenido lo redacta una IA (legal + footer + schema author)."
+        },
+        "attribution": {
+          "type": "boolean",
+          "default": true,
+          "description": "Muestra el crédito 'Hecho con Autopress' en el footer. Ponlo en false para quitarlo (es desmarcable)."
+        },
+        "attribution_url": {
+          "type": "string",
+          "description": "URL a la que enlaza el crédito 'Autopress' del footer (por defecto la web del proyecto)."
+        }
+      }
+    },
+    "sponsorship": {
+      "type": "object",
+      "description": "Solo aplica con editorial.mode=sponsored.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean", "default": false},
+        "brand": {"type": "string"},
+        "product": {"type": "string"}
+      }
+    },
+    "publishing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "block_stub_in_production": {"type": "boolean", "default": true, "description": "Un stub NUNCA llega a producción (solo local/preview)."},
+        "allow_auto_index": {"type": "boolean", "default": false, "description": "Opt-in EXPLÍCITO para que risk_profile=auto indexe sin revisión humana. Por defecto false: todo pasa por approve.py. Actívalo solo si confías en tu quality-gate."},
+        "cooling_window_hours": {"type": "integer", "minimum": 0, "default": 0, "description": "Reservado (aún NO implementado: requiere timestamps con hora end-to-end)."},
+        "min_independent_sources": {"type": "integer", "minimum": 1, "default": 2, "description": "En strict: fuentes de dominios INDEPENDIENTES mínimas por historia (corroboración). QA bloquea si no se cumple."}
+      }
+    },
+    "dedupe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title_similarity_threshold": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.82}
+      }
+    },
+    "taxonomy": {
+      "type": "object",
+      "required": ["topics", "markets"],
+      "additionalProperties": false,
+      "properties": {
+        "topics": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+        },
+        "priority_topics": {"type": "array", "items": {"type": "string"}},
+        "markets": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["tier", "keywords"],
+            "additionalProperties": false,
+            "properties": {
+              "tier": {"type": "string", "enum": ["primary", "secondary", "tertiary", "other"]},
+              "keywords": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+            }
+          }
+        },
+        "players": {
+          "type": "object",
+          "additionalProperties": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "required": ["scoring"],
+      "additionalProperties": false,
+      "properties": {
+        "competitor_blacklist": {"type": "array", "items": {"type": "string"}},
+        "scoring": {
+          "type": "object",
+          "required": ["topic_match", "market_primary", "recency_max_bonus", "recency_decay_per_day"],
+          "additionalProperties": true,
+          "properties": {
+            "topic_match": {"type": "number"},
+            "topic_priority_boost": {"type": "number"},
+            "market_primary": {"type": "number"},
+            "market_secondary": {"type": "number"},
+            "market_tertiary": {"type": "number"},
+            "market_other": {"type": "number"},
+            "players_base": {"type": "number"},
+            "players_extra": {"type": "number"},
+            "players_max_extra": {"type": "integer", "minimum": 0},
+            "recency_max_bonus": {"type": "number"},
+            "recency_decay_per_day": {"type": "number"}
+          }
+        },
+        "geo_quotas": {
+          "type": "object",
+          "additionalProperties": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}
+        },
+        "topic_quotas": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "modes": {
+      "type": "object",
+      "required": ["target_normal", "min_normal", "min_short"],
+      "additionalProperties": false,
+      "properties": {
+        "target_normal": {"type": "integer", "minimum": 1, "maximum": 30},
+        "min_normal": {"type": "integer", "minimum": 1, "maximum": 30},
+        "min_short": {"type": "integer", "minimum": 1, "maximum": 30}
+      }
+    },
+    "compose": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Redacción con LLM. La clave va en el entorno (ANTHROPIC_API_KEY), NUNCA aquí.",
+      "properties": {
+        "model": {"type": "string", "description": "ID del modelo LLM. Va en el YAML, no en el código; verifica el ID vigente con tu proveedor."},
+        "max_tokens": {"type": "integer", "minimum": 256, "maximum": 16000}
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 200,
+      "description": "Feeds RSS/Atom del medio (máx. 200). Tener MUCHAS fuentes NO encarece la API: ingerir/deduplicar/seleccionar es determinista en código (gratis); el LLM solo redacta las historias YA seleccionadas (1 llamada/edición). Controla el volumen con ingest.lookback_days y ingest.max_per_source. Con este bloque el pipeline ingiere de la red; sin él, usa los fixtures (demo). Solo temas con flujo vivo de fuentes (D4).",
+      "items": {
+        "type": "object",
+        "required": ["name", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "url": {"type": "string", "format": "uri", "description": "URL http/https del feed (los esquemas activos se descartan)."},
+          "topic_hint": {"type": "string"},
+          "geo_hint": {"type": "string"},
+          "publisher": {"type": "string", "description": "Propietario/editor de la fuente."},
+          "license": {"type": "string", "description": "Licencia o condiciones de la fuente (o 'desconocida')."},
+          "terms_url": {"type": "string", "description": "URL de los términos/derechos de la fuente."},
+          "rights_status": {"type": "string", "enum": ["ok", "review", "excluded"], "description": "Decisión sobre reutilización: revisada y ok / pendiente / excluida."},
+          "checked_at": {"type": "string", "description": "Fecha de la última revisión de derechos (YYYY-MM-DD)."}
+        }
+      }
+    },
+    "ingest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lookback_days": {"type": "integer", "minimum": 1, "description": "Ventana de recencia: descarta noticias más antiguas."},
+        "max_per_source": {"type": "integer", "minimum": 1, "description": "Tope de ítems por fuente por ejecución."}
+      }
+    },
+    "newsletter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Boletín. El formulario del sitio SOLO se muestra si enabled=true (evita un form roto que apunta a un endpoint inexistente).",
+      "properties": {
+        "enabled": {"type": "boolean", "default": false, "description": "Muestra el formulario de suscripción. Requiere el endpoint serverless (ver newsletter/README.md)."}
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Metadatos del config (p. ej. origin). No editorial.",
+      "properties": {
+        "origin": {"type": "string", "description": "De dónde salió el config (setup, fixtures…). 'fixtures' no debe ir a producción sin personalizar la taxonomía."}
+      }
+    }
+  }
+}

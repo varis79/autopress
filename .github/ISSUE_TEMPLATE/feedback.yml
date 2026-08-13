@@ -1,0 +1,57 @@
+name: "💬 Feedback de prueba / Test feedback"
+description: "Cuéntanos cómo te fue montando tu medio con Autopress. / Tell us how setting up your outlet went."
+title: "[feedback] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¡Gracias por probar **Autopress**! No hace falta que seas técnico: cuenta lo que viviste.
+        _Thanks for testing Autopress! No technical background needed — just tell us what happened._
+  - type: dropdown
+    id: agent
+    attributes:
+      label: "¿Con qué agente lo probaste? / Which agent?"
+      options:
+        - Claude Code
+        - Cursor
+        - ChatGPT (Codex / agente)
+        - Otro / Other
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: "¿Hasta dónde llegaste? / How far did you get?"
+      options:
+        - "Abrí el kit y hablé con el agente / Opened the kit"
+        - "Configuré mi medio (setup) / Configured my outlet"
+        - "Lo vi en local (serve) / Ran it locally"
+        - "Conecté feeds + clave y generó contenido / Generated real content"
+        - "Lo publiqué en la web / Deployed it live"
+    validations:
+      required: true
+  - type: textarea
+    id: what_worked
+    attributes:
+      label: "¿Qué funcionó bien? / What worked?"
+    validations:
+      required: false
+  - type: textarea
+    id: what_broke
+    attributes:
+      label: "¿Dónde te atascaste o qué falló? / Where did you get stuck or what broke?"
+      description: "Pega el mensaje de error o lo que dijo el agente si puedes. / Paste any error or what the agent said."
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "Versión del kit / Kit version"
+      description: "Está en el fichero VERSION (p. ej. 0.5.0). / See the VERSION file."
+      placeholder: "0.5.0"
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "⚠️ **No pegues claves ni secretos** (API keys, tokens). / **Never paste keys or secrets.**"

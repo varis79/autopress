@@ -1,0 +1,16 @@
+# Autopress · dependencias del starter
+# -------------------------------------
+# El NÚCLEO determinista (clasificar → deduplicar → seleccionar → publicar) y el
+# modo STUB usan SOLO la librería estándar de Python 3.11+ — cero dependencias.
+# Estas dos son para las etapas que tocan el exterior:
+#
+#   feedparser  → parseo robusto de RSS/Atom            (etapa ingest)
+#   anthropic   → redacción con LLM                     (etapa compose)
+#                 sin ella, compose cae automáticamente a stub (no rompe)
+#
+# Instalar:  python3 -m pip install -r requirements.txt
+# Verificado el 2026-08-10 con Python 3.13.1.
+
+feedparser==6.0.11
+anthropic==0.96.0
+jsonschema==4.23.0
