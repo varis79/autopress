@@ -84,6 +84,9 @@ def build(dest: str):
         os.replace(os.path.join(dest, "README.md"), os.path.join(dest, "HOWTO.md"))
     shutil.copy2(os.path.join(ROOT, "README.md"), os.path.join(dest, "README.md"))
     shutil.copy2(os.path.join(ROOT, "LICENSE"), os.path.join(dest, "LICENSE"))
+    # VERSION al template: scripts.update lo lee para saber qué versión tiene.
+    if os.path.exists(os.path.join(ROOT, "VERSION")):
+        shutil.copy2(os.path.join(ROOT, "VERSION"), os.path.join(dest, "VERSION"))
     shutil.copy2(os.path.join(ROOT, "docs", "ARCHITECTURE.md"),
                  os.path.join(dest, "ARCHITECTURE.md"))
     for g in GUIDES:

@@ -71,8 +71,16 @@ Detail: [../07-GUARDARRAILES.md](../07-GUARDARRAILES.md).
 
 ## Commands
 `doctor` · `setup` · `serve` · `settings [topic]` · `pipeline [--config … --production]` ·
-`approve <slug>` · `promote` · `retract <slug>`. **Done** = `PYTHONPATH=. python3 -m
-unittest discover tests` green.
+`approve <slug>` · `promote` · `retract <slug>` · `update [--check|--docs]`. **Done** =
+`PYTHONPATH=. python3 -m unittest discover tests` green.
+
+## Keeping the kit up to date
+- `doctor` warns (never blocks) if `compose.model` is a **legacy** model and suggests the
+  replacement. If Anthropic changes an ID, edit `config.json` → `compose.model`.
+- `python3 -m scripts.update --check` says whether a new kit version exists; without `--check`
+  it applies it: **overwrites only the engine** (scripts/tests/schema/AGENTS) with a backup, and
+  **does NOT touch** `config.json`, `.env`, `data/`, `site/`, `prompts/` or `legal/`. If the
+  operator says *"update Autopress"*, run this, then the tests.
 
 ## Discover settings
 If they say *"show me the settings"* or want to change something without knowing where it lives (timezone,

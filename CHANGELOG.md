@@ -13,6 +13,25 @@ Todas las versiones publicables de Autopress. Formato basado en
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-08-12
+Autoservicio y auto-actualización. Onboarding pensado para que baste con enviar
+la URL del repo.
+
+### Añadido
+- **Auto-actualización** `scripts/update.py`: descarga la última Release y
+  **sobrescribe solo el motor** (scripts, tests, esquema, functions, AGENTS) con
+  **copia de seguridad** previa; **nunca toca** `config.json`, `.env`, `data/`,
+  `site/`, `prompts/`, `legal/` ni `examples/`. Flags `--check`, `--docs`,
+  `--yes`. Solo stdlib. Upstream configurable con `AUTOPRESS_UPSTREAM`.
+- **Aviso de modelo heredado** en `doctor` (no bloqueante): `scripts/lib/models.py`
+  mapea IDs superados → reemplazo sugerido; se actualiza con el kit.
+- **`VERSION` incluido en el paquete** para que `update` sepa qué versión hay.
+
+### Cambiado
+- **README (ES/EN) — hero "Empieza en 3 pasos"**: Paso 0 lidera con la opción
+  **sin terminal** (app de doble clic), descarga correcta desde Releases (aviso de
+  no usar "Code → Download ZIP") y prompt de inicio en caja copiable.
+
 ## [0.5.0] — 2026-08-12
 Primera versión pública **beta**. El motor y los guardarraíles están maduros;
 falta la fase "medio de verdad" (leer el artículo completo + evidencia por
@@ -43,5 +62,6 @@ afirmación) y el endpoint real de newsletter. Apta para pruebas de operadores.
   dato. El operador sigue siendo editor y responsable legal.
 - El coste en API es de céntimos por edición (una sola llamada de redacción).
 
-[Unreleased]: https://github.com/varis79/autopress/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/varis79/autopress/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/varis79/autopress/releases/tag/v0.6.0
 [0.5.0]: https://github.com/varis79/autopress/releases/tag/v0.5.0

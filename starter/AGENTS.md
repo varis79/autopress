@@ -72,8 +72,16 @@ Detalle: [../07-GUARDARRAILES.md](../07-GUARDARRAILES.md).
 
 ## Comandos
 `doctor` · `setup` · `serve` · `settings [tema]` · `pipeline [--config … --production]` ·
-`approve <slug>` · `promote` · `retract <slug>`. **Terminado** = `PYTHONPATH=. python3 -m
-unittest discover tests` en verde.
+`approve <slug>` · `promote` · `retract <slug>` · `update [--check|--docs]`. **Terminado** =
+`PYTHONPATH=. python3 -m unittest discover tests` en verde.
+
+## Mantener el kit al día
+- `doctor` avisa (no bloquea) si `compose.model` es un modelo **heredado** y sugiere el
+  reemplazo. Si Anthropic cambia un ID, edita `config.json` → `compose.model`.
+- `python3 -m scripts.update --check` dice si hay versión nueva del kit; sin `--check` la
+  aplica: **sobrescribe solo el motor** (scripts/tests/esquema/AGENTS) con copia de seguridad,
+  y **NO toca** `config.json`, `.env`, `data/`, `site/`, `prompts/` ni `legal/`. Si el operador
+  dice *"actualiza Autopress"*, corre esto y luego los tests.
 
 ## Descubrir settings
 Si dice *"muéstrame los settings"* o quiere cambiar algo sin saber dónde vive (huso horario,

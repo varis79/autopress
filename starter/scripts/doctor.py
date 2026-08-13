@@ -79,6 +79,26 @@ def check_optional_deps():
     return True, msg  # nunca bloquea el modo local
 
 
+def check_model():
+    """Avisa si el modelo configurado es una generación heredada. Nunca bloquea."""
+    from scripts.lib import models as models_mod
+    path = os.path.join(ROOT, "config.json")           # el config del operador
+    if not os.path.exists(path):
+        path = os.path.join(ROOT, "fixtures", "config.json")   # fallback: demo
+    try:
+        cfg = _load_json(path)
+    except Exception:  # noqa: BLE001
+        return True, "sin config legible para comprobar el modelo."
+    model = (cfg.get("compose") or {}).get("model", "")
+    sug = models_mod.superseded(model)
+    if sug:
+        return True, (f"'{model}' es un modelo heredado → cámbialo a '{sug}' en "
+                      f"config.json (compose.model). Corre 'python3 -m scripts.update' "
+                      f"para traer la lista más reciente.")
+    return True, (f"modelo '{model or '(por defecto)'}' sin avisos. Si Anthropic cambia "
+                  f"el ID, actualiza compose.model y verifica en console.anthropic.com.")
+
+
 def check_env():
     names = ["ANTHROPIC_API_KEY", "RESEND_API_KEY", "RESEND_AUDIENCE_ID", "NEWSLETTER_SECRET", "DEPLOY_HOOK"]
     set_ = [n for n in names if os.environ.get(n)]
@@ -99,6 +119,7 @@ def main() -> int:
     ]
     advisory = [
         ("Dependencias", check_optional_deps()),
+        ("Modelo LLM", check_model()),
         ("Variables de entorno", check_env()),
     ]
 
