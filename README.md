@@ -8,6 +8,33 @@ solo, con revisión humana por defecto**: ingiere **feeds RSS** (titulares y res
 cura, redacta una edición semanal y la publica como sitio web estático — sobre la temática que
 tú elijas. Newsletter opcional (montas tú el endpoint).
 
+## 🚀 Empieza en 3 pasos
+
+**Paso 0 — necesitas un agente de IA con acceso a tu ordenador.** Es quien hace el trabajo
+técnico y te lleva de la mano. Si no tienes ninguno, instala uno (gratis/de pago según el
+plan): **[Claude Code](https://claude.com/claude-code)**, **[Cursor](https://cursor.com)** o
+**ChatGPT en modo Codex/agente**. *(Un chat normal de web NO sirve: no puede ejecutar comandos.)*
+
+1. **Descarga el kit:** baja el ZIP de la última versión desde
+   **[Releases](https://github.com/varis79/autopress/releases/latest)** y descomprímelo.
+   > ⚠️ **No uses** el botón verde **"Code → Download ZIP"** (eso es el código fuente, no el
+   > kit). Usa el ZIP `autopress-vX.Y.Z.zip` de **Releases**.
+2. **Abre esa carpeta con tu agente** (en Claude Code/Cursor: abrir la carpeta descomprimida).
+3. **Pega este prompt** y sigue lo que te diga:
+
+```
+Te doy el kit Autopress (estos ficheros). Ayúdame a montar mi propio medio de noticias con IA.
+Soy una persona SIN conocimientos técnicos. Lee AGENTS.md y síguelo: llévame paso a paso,
+ejecutando tú los comandos y esperando mis respuestas. No publiques nada sin mi visto bueno.
+```
+
+El agente te **da la bienvenida**, te hace unas preguntas para dar forma a tu medio y lo va
+montando contigo. No necesitas saber programar. Guía ampliada:
+**[EMPIEZA-AQUI.md](EMPIEZA-AQUI.md)** · paso a paso "para tontos":
+**[GUIA-COMPLETA.md](GUIA-COMPLETA.md)**.
+
+---
+
 > **Sé consciente de dos cosas (honestidad primero):** (1) redacta a partir de los **resúmenes
 > de RSS**, no del artículo completo — es un *digest* con criterio, no un periódico que "lee" la
 > noticia; **parafrasea y cita**, no verifica el sentido de cada cifra. (2) **Autonomía = la
@@ -66,15 +93,12 @@ starter/               · ⭐ El proyecto ejecutable (AGENTS.md, scripts/, tests
   legal/ · newsletter/ · examples/movilidad-mx-es/ (caso trabajado)
 ```
 
-## Empezar
+## ¿Prefieres a mano? (opcional, para técnicos)
 
-> 🚀 **Guía de arranque + prompt de inicio:** [EMPIEZA-AQUI.md](EMPIEZA-AQUI.md).
-
-1. Descarga el kit (o usa "Use this template" en GitHub).
-2. Ábrelo con tu agente de IA (Claude Code / Cursor). Lee **`starter/AGENTS.md`**, te hace el
-   cuestionario y construye tu medio.
-3. ¿Prefieres a mano? `cd starter && PYTHONPATH=. python3 -m scripts.setup` (asistente) y
-   `python3 -m scripts.serve` (previsualiza). O di *"muéstrame los settings"*.
+El asistente y la previsualización también se corren a mano:
+`cd starter && PYTHONPATH=. python3 -m scripts.setup` (cuestionario) y
+`python3 -m scripts.serve` (previsualiza en `http://localhost:8000`). O dile a tu agente
+*"muéstrame los settings"*.
 
 **Nada es obligatorio de golpe:** avanzas por niveles (local → online → dominio → feeds/IA →
 automático → newsletter → monetizas) y cada uno funciona solo. Sin dominio usas el subdominio

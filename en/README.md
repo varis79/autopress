@@ -8,6 +8,31 @@ default**: it ingests **RSS feeds** (headlines and summaries), curates them, wri
 edition and publishes it as a static website — on whatever topic you choose. Optional
 newsletter (you set up the endpoint).
 
+## 🚀 Get started in 3 steps
+
+**Step 0 — you need an AI agent with access to your computer.** It does the technical work and
+walks you through everything. If you don't have one, install one:
+**[Claude Code](https://claude.com/claude-code)**, **[Cursor](https://cursor.com)** or
+**ChatGPT in Codex/agent mode**. *(A plain web chat WON'T work: it can't run commands.)*
+
+1. **Download the kit:** grab the latest ZIP from
+   **[Releases](https://github.com/varis79/autopress/releases/latest)** and unzip it.
+   > ⚠️ **Do NOT** use the green **"Code → Download ZIP"** button (that's the source code, not
+   > the kit). Use the `autopress-vX.Y.Z.zip` from **Releases**.
+2. **Open that folder with your agent** (in Claude Code/Cursor: open the unzipped folder).
+3. **Paste this prompt** and follow along:
+
+```
+Here's the Autopress kit (these files). Help me set up my own AI-powered news outlet. I'm
+NON-technical. Read AGENTS.md and follow it: walk me through it step by step, running the
+commands yourself and waiting for my answers. Don't publish anything without my go-ahead.
+```
+
+The agent **welcomes you**, asks a few questions to shape your outlet and builds it with you.
+No coding needed. More detail: **[START-HERE.md](START-HERE.md)**.
+
+---
+
 > **Two honest caveats:** (1) it writes from **RSS summaries**, not the full article — it's a
 > thoughtful *digest*, not a newspaper that "reads" the news; it **paraphrases and cites**, it
 > does not semantically verify every figure. (2) **Autonomy = the generation**, not the
