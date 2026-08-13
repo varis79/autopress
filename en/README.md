@@ -10,10 +10,16 @@ newsletter (you set up the endpoint).
 
 ## 🚀 Get started in 3 steps
 
-**Step 0 — you need an AI agent with access to your computer.** It does the technical work and
-walks you through everything. If you don't have one, install one:
-**[Claude Code](https://claude.com/claude-code)**, **[Cursor](https://cursor.com)** or
-**ChatGPT in Codex/agent mode**. *(A plain web chat WON'T work: it can't run commands.)*
+**Step 0 — install an AI assistant (an app, no terminal).** It does ALL the technical work for
+you: **you won't type a single command** — you just talk to it. If you don't have one, the
+easiest path is to download an app and open it:
+- **[Cursor](https://cursor.com)** — a double-click app with a chat panel (simplest if you're
+  starting from scratch), or
+- the **[Claude Code](https://claude.com/claude-code)** desktop app, or **ChatGPT in
+  Codex/agent mode**.
+
+*(A plain web chat — claude.ai or chatgpt.com on their own — WON'T work: it can't open your
+folder or run the steps for you.)*
 
 1. **Download the kit:** grab the latest ZIP from
    **[Releases](https://github.com/varis79/autopress/releases/latest)** and unzip it.
