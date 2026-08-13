@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: "🐞 Bug / fallo técnico"
-    url: https://github.com/OWNER/autopress/issues/new
+    url: https://github.com/varis79/autopress/issues/new
     about: "Algo roto en el código o el pipeline (para operadores técnicos)."
   - name: "💡 Idea / mejora"
-    url: https://github.com/OWNER/autopress/discussions
+    url: https://github.com/varis79/autopress/discussions
     about: "Propón feeds, temáticas, features. / Suggest feeds, topics, features."

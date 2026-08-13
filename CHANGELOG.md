@@ -43,5 +43,5 @@ afirmación) y el endpoint real de newsletter. Apta para pruebas de operadores.
   dato. El operador sigue siendo editor y responsable legal.
 - El coste en API es de céntimos por edición (una sola llamada de redacción).
 
-[Unreleased]: https://github.com/OWNER/autopress/compare/v0.5.0...HEAD
-[0.5.0]: https://github.com/OWNER/autopress/releases/tag/v0.5.0
+[Unreleased]: https://github.com/varis79/autopress/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/varis79/autopress/releases/tag/v0.5.0
