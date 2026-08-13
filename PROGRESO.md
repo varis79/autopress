@@ -2,7 +2,36 @@
 
 > Registro vivo de **qué se ha construido, qué decisiones se tomaron y qué falta**.
 > Complementa a `KIT-v2-DECISIONES-Y-PLAN.md` (el plan) con el estado real de la obra.
-> **Última actualización: 2026-08-11.**
+> **Última actualización: 2026-08-12.**
+
+## ⏩ Retomar aquí — 2026-08-12 (v0.6.0)
+
+**Publicado.** El kit vive en **github.com/varis79/autopress** (público). `gh`
+logueado como varis79. **73 tests** en verde. Releases por tag `vX.Y.Z` → la Action
+`release.yml` empaqueta con `pack.py` y publica el ZIP.
+
+- **v0.5.0** (beta): primera Release + infra (CHANGELOG, VERSION, feedback en Issues,
+  feed cap 200). Onboarding autoservicio: README "Empieza en 3 pasos" (ES/EN), Paso 0
+  sin terminal, descarga desde Releases.
+- **v0.6.0** (beta): **auto-actualización** `scripts/update.py` (baja la última
+  Release, sobrescribe solo el motor con backup, nunca toca config/datos) + aviso de
+  **modelo heredado** en `doctor` (`scripts/lib/models.py`).
+
+**En marcha:** web **evaristobabe.com/resources/autopress** — la monta **Codex**
+(bilingüe ES+EN). Copy pulido en `docs/web-page-copy.md`. Es la URL del footer del
+producto. Revisar el preview cuando esté (mensaje, honestidad, hreflang, enlaces).
+
+**Prueba en frío:** un amigo prueba la **v0.5.0** (sin happy path). No trae
+auto-update (existe desde 0.6). Recoger feedback por Issues.
+
+**Pendientes:** repo-template plano para "Use this template" · Path B (leer artículo
+real + evidencia) · traducir GUIA-COMPLETA a EN · revisar la web de Codex.
+
+**Proyecto propio:** Autopress ya es su propio proyecto de Claude Code (abrir desde
+`/Users/varis/Desktop/Air/Claude/autopress`). Contexto en este `PROGRESO.md`,
+`CLAUDE.md` y la memoria del proyecto.
+
+---
 
 ## 🗺️ Mapa del proyecto (dónde estamos) — 2026-08-11
 
