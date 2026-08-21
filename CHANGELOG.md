@@ -11,8 +11,8 @@ Todas las versiones publicables de Autopress. Formato basado en
 > **English:** this changelog is maintained in Spanish; entries are short and
 > technical. The kit itself is fully bilingual (ES/EN).
 
-## [Unreleased]
-Objetivo **0.7.0** — Núcleo LLM fiable, endpoint público seguro y medio más
+## [0.7.0] — 2026-08-21
+Núcleo LLM fiable, endpoint público seguro y medio más
 descubrible. Release combinada (hardening + SEO/E-E-A-T). Sin cambios que rompan
 configs de v0.6; los operadores actualizan con `scripts/update.py`. Alcance en
 `docs/ROADMAP-v0.7.md`; decisión de Path B en `docs/adr/0001-path-b-aplazado.md`.

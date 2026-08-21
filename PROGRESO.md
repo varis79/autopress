@@ -4,7 +4,7 @@
 > Complementa a `KIT-v2-DECISIONES-Y-PLAN.md` (el plan) con el estado real de la obra.
 > **Última actualización: 2026-08-21.**
 
-## ✅ v0.7 implementada — 2026-08-21 (lotes A–G completos, sin publicar)
+## ✅ v0.7.0 publicada — 2026-08-21 (lotes A–G completos)
 
 Los siete lotes del `docs/ROADMAP-v0.7.md` están **en código**, un commit por
 lote sobre la rama `v0.7-hardening`. **Tests 89/89** en verde, en el repo y
@@ -30,10 +30,12 @@ pasada de `<head>` en `site.py`; separarlos habría partido la función). El
 plan original decía "un PR por lote", pero la implementación llegó al árbol de
 trabajo sin commits intermedios: se reconstruyó por lotes a posteriori.
 
-**Pendiente para publicar:** subir `VERSION` a `0.7.0`, cerrar el bloque
-`[Unreleased]` del CHANGELOG, merge a `main` y tag `v0.7.0`. **Residuo
-honesto: `doctor --smoke` nunca se ha corrido contra la API real** (los tests
-lo ejercitan con un SDK falso); conviene hacerlo una vez antes de taggear.
+**Residuo honesto: `doctor --smoke` se publicó SIN haberse corrido nunca
+contra la API real.** Los tests lo ejercitan con un SDK falso, y el entorno
+donde se preparó la release no tenía `ANTHROPIC_API_KEY`. Es la única pieza de
+v0.7 no verificada en vivo: conviene correrlo una vez con clave y, si falla,
+sacar un 0.7.1. El resto (89/89 tests dentro del ZIP, doctor, 0 "cd starter",
+0 enlaces rotos) sí está verificado sobre el paquete real.
 
 ---
 
