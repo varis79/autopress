@@ -21,7 +21,19 @@
         "language": {"type": "string"},
         "timezone": {"type": "string", "description": "Huso horario de referencia (IANA, p. ej. Europe/Madrid)."},
         "publisher": {"type": "string"},
-        "theme": {"type": "object"}
+        "theme": {"type": "object"},
+        "locale": {"type": "string", "description": "Locale OpenGraph (xx_YY, p. ej. es_ES). Opcional; si falta se deriva de site.language."},
+        "logo": {"type": "string", "description": "URL http/https del logo del medio (para JSON-LD / og). Opcional."},
+        "same_as": {"type": "array", "items": {"type": "string"}, "description": "URLs propias verificadas del medio (perfiles sociales, etc.) para JSON-LD sameAs. Opcional."},
+        "og_image": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Imagen social (og:image). La tarjeta auto-por-edición (PNG) llega en una versión futura.",
+          "properties": {
+            "mode": {"type": "string", "enum": ["off", "static"], "default": "off"},
+            "path": {"type": "string", "description": "Ruta o URL de la imagen raster (jpg/png). El SVG NO vale como og:image."}
+          }
+        }
       }
     },
     "risk_profile": {
@@ -53,7 +65,11 @@
         "attribution_url": {
           "type": "string",
           "description": "URL a la que enlaza el crédito 'Autopress' del footer (por defecto la web del proyecto)."
-        }
+        },
+        "curator": {"type": "string", "description": "Nombre del curador/editor (aparece en el byline y en /about; señal E-E-A-T). Opcional."},
+        "contact_email": {"type": "string", "description": "Correo de contacto para /about y correcciones. Opcional."},
+        "cadence": {"type": "string", "description": "Cadencia editorial en /methodology (por defecto 'semanal'). Opcional."},
+        "corrections": {"type": "string", "description": "Política de correcciones para /methodology. Opcional."}
       }
     },
     "sponsorship": {

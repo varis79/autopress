@@ -73,6 +73,73 @@ class PublishStoreTest(unittest.TestCase):
             publish(_ed("2026-08-10", "Dos"), CONFIG, out, store_dir=store, persist=False)
             self.assertFalse(os.path.exists(os.path.join(out, "magazines", "2026-08-03-edicion.html")))
 
+    def test_seo_signals_and_eeat(self):
+        cfg = {"site": {"name": "M", "domain": "https://m.com", "language": "es",
+                        "theme": {"style": "editorial", "palette": "warm"}},
+               "editorial": {"curator": "Ana"}, "risk_profile": "review",
+               "sources": [{"name": "Alfa", "url": "https://alfa.com/feed"}]}
+        two = [{"n": 1, "url": "https://a.com/x", "name": "a"},
+               {"n": 2, "url": "https://b.com/y", "name": "b"}]
+        ed = {"title": "M", "date": "2026-08-10", "stub": False, "status": "approved",
+              "cover": {"headline": "Portada clave", "deck": "deck", "kicker": "k", "sources": two},
+              "stories": [{"headline": "Portada clave", "summary": "s", "sources": []},
+                          {"headline": "Segunda historia", "summary": "s2", "topic": "t",
+                           "market": "mx", "sources": two}]}
+        with tempfile.TemporaryDirectory() as store, tempfile.TemporaryDirectory() as out:
+            publish(ed, cfg, out, store_dir=store, persist=True, production=True)
+            idx = open(os.path.join(out, "index.html"), encoding="utf-8").read()
+            self.assertIn("Portada clave · M", idx)              # F1 <title> con titular
+            self.assertIn("La semana en breve", idx)             # F4 tldr (2 titulares)
+            self.assertIn("2 fuentes", idx)                      # F5 badge de corroboración
+            self.assertIn("Curado por Ana", idx)                 # byline (E-E-A-T)
+            for p in ("about.html", "methodology.html", "sources.html"):  # F3
+                self.assertTrue(os.path.exists(os.path.join(out, p)))
+            method = open(os.path.join(out, "methodology.html"), encoding="utf-8").read()
+            self.assertIn("index, follow", method)               # indexable en producción
+            self.assertIn("digest", method.lower())              # alcance honesto declarado
+            srcs = open(os.path.join(out, "sources.html"), encoding="utf-8").read()
+            self.assertIn("alfa.com", srcs)                      # fuente del config listada
+            robots = open(os.path.join(out, "robots.txt"), encoding="utf-8").read()  # F2
+            self.assertIn("Sitemap: https://m.com/sitemap.xml", robots)
+            sm = open(os.path.join(out, "sitemap.xml"), encoding="utf-8").read()
+            self.assertIn("/methodology.html", sm)
+
+    def test_backport_og_locale_twitter_jsonld_prevnext(self):
+        cfg = {"site": {"name": "M", "domain": "https://m.com", "language": "es-ES",
+                        "theme": {"style": "editorial", "palette": "warm"},
+                        "same_as": ["https://x.com/medio"], "logo": "https://m.com/logo.png",
+                        "og_image": {"mode": "static", "path": "/social.png"}}}
+        with tempfile.TemporaryDirectory() as store, tempfile.TemporaryDirectory() as out:
+            publish(_ed("2026-08-03", "Uno"), cfg, out, store_dir=store, persist=True, production=True)
+            publish(_ed("2026-08-10", "Dos"), cfg, out, store_dir=store, persist=True, production=True)
+            idx = open(os.path.join(out, "index.html"), encoding="utf-8").read()
+            self.assertIn('property="og:locale" content="es_ES"', idx)   # G3 (es-ES→es_ES)
+            self.assertIn('name="twitter:card" content="summary_large_image"', idx)  # G2 (con imagen)
+            self.assertIn('property="og:image" content="https://m.com/social.png"', idx)  # G2 estática
+            self.assertIn('"inLanguage": "es"', idx)                     # G4 aditivo
+            self.assertIn('"@type": "BreadcrumbList"', idx)             # G4 breadcrumb
+            self.assertIn('"sameAs"', idx)                              # G4 sameAs opt-in
+            # G1 prev/next: la home (Dos) enlaza a la anterior (Uno)
+            self.assertIn('/magazines/2026-08-03-edicion.html', idx)
+            older = open(os.path.join(out, "magazines", "2026-08-03-edicion.html"), encoding="utf-8").read()
+            self.assertIn('rel="next"', older)                          # la antigua tiene 'siguiente'
+
+    def test_backport_rejects_svg_og_image(self):
+        cfg = {"site": {"name": "M", "domain": "https://m.com", "language": "es",
+                        "theme": {"style": "editorial", "palette": "warm"},
+                        "og_image": {"mode": "static", "path": "/card.svg"}}}
+        with tempfile.TemporaryDirectory() as store, tempfile.TemporaryDirectory() as out:
+            publish(_ed("2026-08-10", "Uno"), cfg, out, store_dir=store, persist=True, production=True)
+            idx = open(os.path.join(out, "index.html"), encoding="utf-8").read()
+            self.assertNotIn("og:image", idx)                          # SVG rechazado como og:image
+            self.assertIn('name="twitter:card" content="summary"', idx)  # sin imagen → summary
+
+    def test_robots_preview_disallows(self):
+        with tempfile.TemporaryDirectory() as store, tempfile.TemporaryDirectory() as out:
+            publish(_ed("2026-08-10", "Uno"), CONFIG, out, store_dir=store, persist=True)  # preview
+            robots = open(os.path.join(out, "robots.txt"), encoding="utf-8").read()
+            self.assertIn("Disallow: /", robots)
+
     def test_preview_does_not_persist(self):
         with tempfile.TemporaryDirectory() as store, tempfile.TemporaryDirectory() as out:
             publish(_ed("2026-08-03", "Uno"), CONFIG, out, store_dir=store, persist=False)

@@ -54,6 +54,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .cites a{color:var(--accent);text-decoration:none;padding:0 .04em}
 .cites a:hover{text-decoration:underline}
 
+/* señales de curación + E-E-A-T (Lote F) */
+.byline{margin:.15rem 0 0;font-size:.78rem;color:var(--muted)}
+.badge{border:1px solid var(--accent);border-radius:999px;padding:.05rem .55rem;
+  color:var(--accent);font-weight:600}
+.tldr{margin:1.4rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--card-radius)}
+.tldr-h{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 .5rem}
+.tldr ul{margin:0;padding-left:1.1rem} .tldr li{margin:.2rem 0;color:var(--fg)}
+.page{max-width:42rem} .page h1{color:var(--accent)} .page p{color:var(--fg);line-height:1.6}
+.page .sources{padding-left:1.1rem} .page .sources li{margin:.35rem 0}
+.edition-nav{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0 0;
+  padding-top:1rem;border-top:1px solid var(--border);font-weight:600}
+
 /* caja de suscripción — con degradado sutil + botón en degradado */
 .nl{position:relative;overflow:hidden;margin:2.2rem 0 1rem;padding:1.5rem 1.4rem;
   border-radius:calc(var(--card-radius) + 4px);background:var(--card);border:1px solid var(--border)}
@@ -63,6 +77,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .nl-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);margin:0 0 .3rem}
 .nl-title{font-family:var(--font-head);font-weight:var(--head-weight);margin:0 0 .85rem;font-size:1.3rem;line-height:1.15}
 .nl-form{display:flex;gap:.5rem;flex-wrap:wrap}
+.nl-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
 .nl-input{flex:1;min-width:12rem;padding:.62rem .85rem;border-radius:9px;border:1px solid var(--border);
   background:var(--bg);color:var(--fg);font:inherit}
 .nl-btn{padding:.62rem 1.2rem;border-radius:9px;border:0;font:inherit;font-weight:700;cursor:pointer;

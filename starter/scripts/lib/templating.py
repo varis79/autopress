@@ -49,6 +49,9 @@ def _newsletter_box(lang: str = "es") -> str:
         f'    <p class="nl-eyebrow">{_esc(t(lang, "nl_eyebrow"))}</p>\n'
         f'    <h3 class="nl-title">{_esc(t(lang, "nl_title"))}</h3>\n'
         '    <form class="nl-form" method="post" action="/api/subscribe">\n'
+        # honeypot: oculto para humanos; si un bot lo rellena, el endpoint descarta el alta.
+        '      <input class="nl-hp" type="text" name="website" tabindex="-1" '
+        'autocomplete="off" aria-hidden="true">\n'
         '      <input class="nl-input" type="email" name="email" required '
         f'placeholder="{_esc(t(lang, "nl_placeholder"))}" aria-label="email">\n'
         f'      <button class="nl-btn" type="submit">{_esc(t(lang, "nl_button"))}</button>\n'
@@ -73,8 +76,36 @@ def _cites(sources) -> str:
     return f'<sup class="cites">{"".join(_cite_one(s) for s in sources)}</sup>'
 
 
-def edition_inner(ed: dict, lang: str = "es", newsletter: bool = False) -> str:
-    """Masthead + portada + historias (con citas numeradas) + suscripción (si activa)."""
+def _sources_badge(sources, lang: str) -> str:
+    """Señal de corroboración: 'N fuentes' cuando la historia la cubren ≥2 medios (dedupe
+    ya adjuntó las fuentes). 0 llamadas al LLM: solo lee datos ya presentes."""
+    n = len(sources or [])
+    if n < 2:
+        return ""
+    return f'<span class="badge">{n} {_esc(t(lang, "sources_label"))}</span>'
+
+
+def _tldr(headlines, lang: str) -> str:
+    """'La semana en breve': lista escaneable construida DETERMINISTAMENTE desde los titulares
+    ya compuestos (0 llamadas extra). Solo si hay ≥2 titulares."""
+    hs = [h for h in headlines if h]
+    if len(hs) < 2:
+        return ""
+    items = "".join(f"<li>{_esc(h)}</li>" for h in hs)
+    return (f'  <section class="tldr">\n    <h2 class="tldr-h">{_esc(t(lang, "tldr_heading"))}</h2>\n'
+            f'    <ul>{items}</ul>\n  </section>\n')
+
+
+def _byline(lang: str, curator: str = "") -> str:
+    """Firma visible bajo el masthead + enlace a la metodología (señal E-E-A-T)."""
+    who = f'{_esc(t(lang, "byline_curated"))} {_esc(curator)} · ' if curator else ""
+    return (f'    <p class="byline">{who}'
+            f'<a href="/methodology.html">{_esc(t(lang, "byline_method"))}</a></p>\n')
+
+
+def edition_inner(ed: dict, lang: str = "es", newsletter: bool = False, curator: str = "") -> str:
+    """Masthead (+byline) + 'la semana en breve' + portada + historias (citas + badge de
+    fuentes) + suscripción (si activa)."""
     stub = '<span class="stub">stub</span>' if ed.get("stub") else ""
     cov = ed.get("cover", {})
     cover_kicker = cov.get("kicker") or t(lang, "cover_kicker")
@@ -83,23 +114,28 @@ def edition_inner(ed: dict, lang: str = "es", newsletter: bool = False) -> str:
     for s in stories[1:]:  # la portada es stories[0]; las tarjetas son el resto
         kicker = f'<p class="kicker">{_esc(s.get("topic"))}</p>\n  ' if s.get("topic") else ""
         market = f'<span class="tag">{_esc(s.get("market"))}</span>' if s.get("market") else ""
+        badge = _sources_badge(s.get("sources", []), lang)
         cards.append(
             '<article class="card">\n  '
             + kicker
             + f'<h3>{_esc(s.get("headline"))}</h3>\n'
             f'  <p>{_esc(s.get("summary"))} {_cites(s.get("sources", []))}</p>\n'
-            f'  <div class="meta">{market}</div>\n'
+            f'  <div class="meta">{market}{badge}</div>\n'
             "</article>"
         )
+    tldr = _tldr([cov.get("headline")] + [s.get("headline") for s in stories[1:]], lang)
     return (
         '  <header class="masthead">\n'
         f'    <h1>{_esc(ed.get("title"))}</h1>\n'
         f'    <span class="date">{_esc(ed.get("date"))} {stub}</span>\n'
-        "  </header>\n"
-        '  <section class="cover">\n'
+        + _byline(lang, curator)
+        + "  </header>\n"
+        + tldr
+        + '  <section class="cover">\n'
         f'    <p class="kicker">{_esc(cover_kicker)}</p>\n'
         f'    <h2>{_esc(cov.get("headline"))}</h2>\n'
-        f'    <p class="deck">{_esc(cov.get("deck"))} {_cites(cov.get("sources", []))}</p>\n'
+        f'    <p class="deck">{_esc(cov.get("deck"))} {_cites(cov.get("sources", []))} '
+        f'{_sources_badge(cov.get("sources", []), lang)}</p>\n'
         "  </section>\n"
         '  <div class="stories">\n    ' + "\n    ".join(cards) + "\n  </div>\n"
         + (_newsletter_box(lang) if newsletter else "")   # el form solo si la newsletter está activa
