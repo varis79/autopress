@@ -45,7 +45,7 @@ whenever you want, without redoing anything:
 
 ## Step 0 · Get the kit and open it with your agent
 
-Download the kit (ZIP from the web, or "Use this template" on GitHub) and open it with your
+Download the kit (ZIP from `/releases/latest`) and open it with your
 AI agent. The first thing the agent will do is read **`AGENTS.md`**, the entry
 file.
 
@@ -190,14 +190,14 @@ to the original.
 > add your **RSS feeds** to the config (the `sources` block, see `../starter/autopress.schema.json`)
 > and point the pipeline to your own config:
 > ```bash
-> PYTHONPATH=. python3 -m scripts.pipeline --config mi-config.json
+> PYTHONPATH=. python3 -m scripts.pipeline --config config.json
 > ```
 > With `sources`, the pipeline **ingests from the network** (with timeout, retries and per-source
 > diagnostics) instead of the fixtures. And for the **indexable** version (not preview) you run it
 > in production, which **doesn't publish** if the edition is stub, is paused or QA blocks it
 > (it exits with a code ≠ 0):
 > ```bash
-> PYTHONPATH=. python3 -m scripts.pipeline --config mi-config.json --production
+> PYTHONPATH=. python3 -m scripts.pipeline --config config.json --production
 > ```
 
 ---

@@ -13,7 +13,7 @@ Español: [EMPIEZA-AQUI.md](../EMPIEZA-AQUI.md).
   you can still move forward (see the levels in [00-QUICKSTART.md](00-QUICKSTART.md)).
 
 ## How to start (2 steps)
-1. **Download the kit** (or "Use this template" on GitHub) and open it with your code agent.
+1. **Download the kit** (ZIP from `/releases/latest`) and open it with your code agent.
 2. **Paste this starting prompt:**
 
 ```
