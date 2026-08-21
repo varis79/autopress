@@ -2,7 +2,40 @@
 
 > Registro vivo de **qué se ha construido, qué decisiones se tomaron y qué falta**.
 > Complementa a `KIT-v2-DECISIONES-Y-PLAN.md` (el plan) con el estado real de la obra.
-> **Última actualización: 2026-08-13.**
+> **Última actualización: 2026-08-21.**
+
+## ✅ v0.7 implementada — 2026-08-21 (lotes A–G completos, sin publicar)
+
+Los siete lotes del `docs/ROADMAP-v0.7.md` están **en código**, un commit por
+lote sobre la rama `v0.7-hardening`. **Tests 89/89** en verde, en el repo y
+**dentro del ZIP** empaquetado; `doctor` LISTO; `grep -c "cd starter"` == 0 y
+0 enlaces relativos rotos en el template. Los 4 checks del criterio de
+"terminado" del roadmap, verificados.
+
+**Los dos `high` cerrados:** el truncado silencioso de `compose` (thinking con
+presupuesto propio + causa `truncated`) y el endpoint de alta sin defensas
+(origen + honeypot + rate-limit KV + Turnstile server-side).
+
+**Añadido fuera del roadmap** (2026-08-20, a raíz de un aviso real de
+retirada de `claude-opus-4-1` que llegó por correo): `compose` traduce el
+**404 a la causa `model-not-found`** —el arreglo es editar `compose.model`, no
+reintentar— y `lib/models.py` distingue **retirado** de **heredado**
+**deduciendo el nivel de la fecha de retirada anunciada**, así el aviso sigue
+siendo correcto aunque el operador lleve meses sin actualizar el kit. El 404
+cubre además los modelos que se retiren después de esta versión, que ninguna
+lista mantenida a mano puede conocer.
+
+**Decisiones de historia:** F y G van en un solo commit (comparten la misma
+pasada de `<head>` en `site.py`; separarlos habría partido la función). El
+plan original decía "un PR por lote", pero la implementación llegó al árbol de
+trabajo sin commits intermedios: se reconstruyó por lotes a posteriori.
+
+**Pendiente para publicar:** subir `VERSION` a `0.7.0`, cerrar el bloque
+`[Unreleased]` del CHANGELOG, merge a `main` y tag `v0.7.0`. **Residuo
+honesto: `doctor --smoke` nunca se ha corrido contra la API real** (los tests
+lo ejercitan con un SDK falso); conviene hacerlo una vez antes de taggear.
+
+---
 
 ## 🔎 Auditoría v0.7 — 2026-08-13 (planificación, sin implementar)
 
