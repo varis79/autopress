@@ -29,10 +29,13 @@ def _rendered_units(edition: dict) -> list:
 
 
 def _unsupported_numbers(unit: dict) -> list:
-    """Cifras (>=2 dígitos) que aparecen en la redacción pero NO en su fuente."""
+    """Cifras que aparecen en la redacción pero NO en su fuente. min_len=1 para cubrir también
+    números de un dígito (muertos, heridos, %…), de alto impacto en noticias: '2→9 muertos' no
+    debe colarse. (number_tokens agrupa dígitos en secuencias, así que no bloquea por dígitos
+    sueltos dentro de un número mayor.)"""
     text = f"{unit.get('headline', '')} {unit.get('summary', '') or unit.get('deck', '')}"
-    out = number_tokens(text)
-    src = number_tokens(unit.get("_evidence", ""))
+    out = number_tokens(text, min_len=1)
+    src = number_tokens(unit.get("_evidence", ""), min_len=1)
     return sorted(n for n in out if n not in src)
 
 
