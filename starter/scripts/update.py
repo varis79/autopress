@@ -136,6 +136,18 @@ def _download(url: str, dest: str):
         shutil.copyfileobj(r, f)
 
 
+def _safe_extract(zf: "zipfile.ZipFile", dest: str):
+    """Extrae rechazando rutas absolutas o con '..' (anti *zip-slip*): un miembro malicioso
+    no debe escribir fuera de `dest`. La allowlist NEVER solo filtra el COPIADO posterior, no
+    la extracción, así que el saneo tiene que ir aquí, en la propia feature de auto-update."""
+    dest_abs = os.path.realpath(dest)
+    for name in zf.namelist():
+        target = os.path.realpath(os.path.join(dest, name))
+        if target != dest_abs and not target.startswith(dest_abs + os.sep):
+            raise ValueError(f"ruta insegura en el ZIP (posible zip-slip): {name!r}")
+    zf.extractall(dest)
+
+
 def _read_local_version(install_root: str) -> str:
     p = os.path.join(install_root, "VERSION")
     try:
@@ -199,7 +211,7 @@ def main(argv=None) -> int:
             return 1
         ex = os.path.join(tmp, "ex")
         with zipfile.ZipFile(zpath) as z:
-            z.extractall(ex)
+            _safe_extract(z, ex)   # anti zip-slip: valida rutas antes de escribir
         pkg = _find_pkg_root(ex)
         if not os.path.isdir(os.path.join(pkg, "scripts")):
             print("❌ El ZIP no parece un kit válido (sin scripts/). Aborto sin tocar nada.")

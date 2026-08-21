@@ -37,6 +37,31 @@ class TestFindPkgRoot(unittest.TestCase):
                              os.path.join(nested, "autopress-v1"))
 
 
+class TestSafeExtract(unittest.TestCase):
+    def test_rejects_zip_slip(self):
+        with tempfile.TemporaryDirectory() as d:
+            zpath = os.path.join(d, "evil.zip")
+            with zipfile.ZipFile(zpath, "w") as z:
+                z.writestr("scripts/ok.py", "x = 1\n")          # miembro legítimo
+                z.writestr("../../evil.txt", "pwned")            # escapa del destino
+            ex = os.path.join(d, "ex")
+            with zipfile.ZipFile(zpath) as z:
+                with self.assertRaises(ValueError):
+                    update._safe_extract(z, ex)
+            # y NO debe haber escrito el fichero malicioso fuera del destino
+            self.assertFalse(os.path.exists(os.path.join(d, "evil.txt")))
+
+    def test_extracts_normal_zip(self):
+        with tempfile.TemporaryDirectory() as d:
+            zpath = os.path.join(d, "ok.zip")
+            with zipfile.ZipFile(zpath, "w") as z:
+                z.writestr("scripts/pipeline.py", "x = 1\n")
+            ex = os.path.join(d, "ex")
+            with zipfile.ZipFile(zpath) as z:
+                update._safe_extract(z, ex)
+            self.assertTrue(os.path.exists(os.path.join(ex, "scripts", "pipeline.py")))
+
+
 class TestApplyUpdate(unittest.TestCase):
     def _install(self, root):
         # kit "instalado" con motor viejo + contenido del operador
