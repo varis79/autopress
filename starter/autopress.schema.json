@@ -163,7 +163,8 @@
       "description": "Redacción con LLM. La clave va en el entorno (ANTHROPIC_API_KEY), NUNCA aquí.",
       "properties": {
         "model": {"type": "string", "description": "ID del modelo LLM. Va en el YAML, no en el código; verifica el ID vigente con tu proveedor."},
-        "max_tokens": {"type": "integer", "minimum": 256, "maximum": 16000}
+        "max_tokens": {"type": "integer", "minimum": 256, "maximum": 16000, "default": 8000, "description": "Tope de tokens de salida (por defecto 8000). En modelos con razonamiento adaptativo este tope se comparte con el 'thinking'; por eso compose lo desactiva por defecto."},
+        "thinking": {"type": "string", "enum": ["disabled", "adaptive"], "default": "disabled", "description": "Razonamiento del modelo. 'disabled' (por defecto) da todo max_tokens a la redacción y evita truncados; 'adaptive' deja pensar al modelo (más lento y puede truncar si max_tokens es bajo)."}
       }
     },
     "sources": {
