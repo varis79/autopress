@@ -2,7 +2,104 @@
 
 > Registro vivo de **qué se ha construido, qué decisiones se tomaron y qué falta**.
 > Complementa a `KIT-v2-DECISIONES-Y-PLAN.md` (el plan) con el estado real de la obra.
-> **Última actualización: 2026-08-12.**
+> **Última actualización: 2026-08-21.**
+
+## ✅ v0.7.0 publicada — 2026-08-21 (lotes A–G completos)
+
+Los siete lotes del `docs/ROADMAP-v0.7.md` están **en código**, un commit por
+lote sobre la rama `v0.7-hardening`. **Tests 89/89** en verde, en el repo y
+**dentro del ZIP** empaquetado; `doctor` LISTO; `grep -c "cd starter"` == 0 y
+0 enlaces relativos rotos en el template. Los 4 checks del criterio de
+"terminado" del roadmap, verificados.
+
+**Los dos `high` cerrados:** el truncado silencioso de `compose` (thinking con
+presupuesto propio + causa `truncated`) y el endpoint de alta sin defensas
+(origen + honeypot + rate-limit KV + Turnstile server-side).
+
+**Añadido fuera del roadmap** (2026-08-20, a raíz de un aviso real de
+retirada de `claude-opus-4-1` que llegó por correo): `compose` traduce el
+**404 a la causa `model-not-found`** —el arreglo es editar `compose.model`, no
+reintentar— y `lib/models.py` distingue **retirado** de **heredado**
+**deduciendo el nivel de la fecha de retirada anunciada**, así el aviso sigue
+siendo correcto aunque el operador lleve meses sin actualizar el kit. El 404
+cubre además los modelos que se retiren después de esta versión, que ninguna
+lista mantenida a mano puede conocer.
+
+**Decisiones de historia:** F y G van en un solo commit (comparten la misma
+pasada de `<head>` en `site.py`; separarlos habría partido la función). El
+plan original decía "un PR por lote", pero la implementación llegó al árbol de
+trabajo sin commits intermedios: se reconstruyó por lotes a posteriori.
+
+**Residuo honesto: `doctor --smoke` se publicó SIN haberse corrido nunca
+contra la API real.** Los tests lo ejercitan con un SDK falso, y el entorno
+donde se preparó la release no tenía `ANTHROPIC_API_KEY`. Es la única pieza de
+v0.7 no verificada en vivo: conviene correrlo una vez con clave y, si falla,
+sacar un 0.7.1. El resto (89/89 tests dentro del ZIP, doctor, 0 "cd starter",
+0 enlaces rotos) sí está verificado sobre el paquete real.
+
+---
+
+## 🔎 Auditoría v0.7 — 2026-08-13 (planificación, sin implementar)
+
+**Auditoría multiagente completa** (18 agentes: 8 finders por dimensión +
+verificación adversarial + síntesis, sobre el repo real). Alcance de v0.7 acordado:
+**release combinada** (hardening + SEO/E-E-A-T). Docs canónicos añadidos:
+`docs/ROADMAP-v0.7.md`, `docs/adr/0001-path-b-aplazado.md`, bloque `[Unreleased]`
+del `CHANGELOG`.
+
+**Estado real:** sin hallazgos *critical*; motor y guardarraíles nucleares sólidos
+(procedencia blindada, "stub nunca en producción" con 4 guardas, review-first,
+XSS/SSRF bien resueltos). 32 hallazgos; **2 high**:
+- **#1** `compose.py:164` — truncado silencioso: en Sonnet 5 el `thinking` comparte
+  `max_tokens`; si los agota, JSON truncado → cae a stub sin causa accionable.
+- **#2** `subscribe.js:6` — sin rate-limit ni Turnstile (existe `TURNSTILE_SECRET_KEY`
+  sin usar) → email-bombing a terceros vía Resend.
+
+**Medium relevantes:** cifras de 1 dígito burlan el check anti-invención
+(`lib/text.py:72`); `pack.py:102` deja `cd starter` en los `.py` del template;
+`max_tokens` incoherente (4000 doc vs 8000 código); `doctor` valida solo fixtures,
+nunca el config del operador; atribución de acusaciones circular (`risk.py:44`);
+email en claro en el token del boletín; zip-slip en `update.py:201`; no hay envío
+automático del boletín (solo alta).
+
+**Decisión Path B:** **APLAZADO a v0.8** (ADR 0001). El verificador refutó/degradó
+todos sus hallazgos (no existe código de fetch de cuerpo). Precondiciones para v0.8:
+`doctor --smoke` en vivo, verificación numérica a nivel afirmación/entidad, y
+extractor HTML→cuerpo determinista.
+
+**Producto (2º workflow):** idea faro = **páginas E-E-A-T deterministas** desde
+config (Google no penaliza la IA, penaliza la falta de E-E-A-T). Quick wins SEO:
+`<title>` con titular, `robots.txt`, "N fuentes lo cubren", "la semana en N puntos".
+A v0.8: hubs por tema (con gate anti-thin), recetas por vertical, descubridor de
+feeds, panel de revisión local, newsletter HTML determinista.
+
+**Siguiente:** implementar por lotes (A compose → B seguridad → C guardarraíles →
+D empaquetado → E UX → F SEO → G backport), un PR por lote, y publicar con tag
+`v0.7.0` (`release.yml` empaqueta y sube el ZIP). Plan en `docs/ROADMAP-v0.7.md`.
+
+### Backport del medio de referencia — 2026-08-13 (planificación)
+Brief del usuario: generalizar 7 capacidades probadas en el medio real privado
+(referencia conceptual; **nada de ese medio en el repo** — todo reimplementado
+genérico y config-driven). Workflow de 8 agentes (gap real con archivo:línea +
+diseño genérico + encaje). Independencia verificada: todo sale de `config.site`/
+`config.taxonomy` del operador, 0 llamadas LLM nuevas, sin CDNs.
+
+Decisiones tomadas:
+- **v0.7 gana el Lote G** (quick wins deterministas): G1 prev/next, G2 twitter
+  cards + `og:image` estática (del operador) + `palettes.py`, G3 `og:locale`,
+  G4 JSON-LD aditivo. **og:image PNG auto-por-edición se rechaza en v0.7** (pide
+  Pillow); va a v0.8. **SVG como og:image se descarta** (los sociales lo ignoran).
+- **v0.8 = `docs/ROADMAP-v0.8.md`** (nuevo): Lote H hubs con gate anti-thin (faro),
+  Lote I newsletter HTML determinista (cierra "solo alta, sin envío"; broadcast
+  sigue aplazado), Lote J 2ª ola SEO (@graph, og:image PNG/Pillow opcional,
+  hreflang opt-in, news-sitemap/feed). H0 = refactor `_load_store → lib/store.py`.
+- **Backport #7 (radar de temas)** → v0.8+: precisa ~8-12 ediciones de historial y
+  persistir `players` en `compose.assemble` (hoy `compose.py:126` los descarta).
+
+Gaps clave confirmados a mano: `theme.css` no es email-safe (55 `var()/@media`);
+`players` no se persisten; `web-page-copy.md:249` promete hreflang inexistente.
+
+---
 
 ## ⏩ Retomar aquí — 2026-08-12 (v0.6.0)
 

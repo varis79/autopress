@@ -53,7 +53,10 @@ SETTINGS = [
     # --- IA (nivel 3) ---
     ("compose.model", "IA", "config", 3, "texto", "claude-sonnet-5", None,
      "Modelo de IA que redacta (verifica el ID vigente)."),
-    ("compose.max_tokens", "IA", "config", 3, "entero", "4000", None, "Tope de tokens de salida."),
+    ("compose.max_tokens", "IA", "config", 3, "entero", "8000", None,
+     "Tope de tokens de salida. En modelos con razonamiento adaptativo (p. ej. Sonnet 5) este tope se comparte con el 'thinking'; no lo bajes o la edición puede truncarse."),
+    ("compose.thinking", "IA", "config", 3, "texto", "disabled", None,
+     "Razonamiento del modelo: 'disabled' (por defecto, da todo max_tokens a la redacción) o 'adaptive'."),
     ("ANTHROPIC_API_KEY", "IA", "env", 3, "secreto", "", None,
      "Clave del modelo. Sin ella → modo stub (no gasta)."),
     # --- Riesgo / gobernanza (nivel 3) ---

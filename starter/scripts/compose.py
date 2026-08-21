@@ -120,14 +120,19 @@ def assemble(data: dict, selection: dict, by_id: dict, meta: dict) -> dict:
         allowed = _story_allowed_ids(item)   # SOLO las fuentes de ESTA historia
         refs = [r for r in (st.get("source_refs") or []) if r in allowed] or [rid]
         sel = by_ref[rid]
+        headline = (st.get("headline") or "").strip()
+        summary = (st.get("summary") or "").strip()
+        if not headline or not summary:
+            continue   # tarjeta en blanco: el LLM devolvió JSON válido pero vacío → se descarta
         stories.append({
-            "headline": (st.get("headline") or "").strip(),
-            "summary": (st.get("summary") or "").strip(),
+            "headline": headline,
+            "summary": summary,
             "topic": sel.get("topic"), "market": sel.get("market"),
             "sources": _resolve_sources(refs, registry),
             "_evidence": _evidence_text(item),
         })
     if not stories:
+        # sin historias con contenido útil → el pipeline cae a stub (no publica en blanco)
         raise ValueError("el LLM no devolvió historias válidas")
     cover = data.get("cover", {})
     lead = stories[0]
@@ -142,26 +147,53 @@ def assemble(data: dict, selection: dict, by_id: dict, meta: dict) -> dict:
     }
 
 
-def _stub_with_cause(selection, by_id, meta, cause):
+def _cause_of(exc: Exception) -> str:
+    """Traduce una excepción del SDK a una causa ACCIONABLE.
+
+    Un 404 significa que `compose.model` no existe: ID mal escrito o modelo
+    retirado por el proveedor. Merece causa propia y no el críptico
+    'NotFoundError' porque el arreglo es distinto del resto de fallos —se edita
+    el config, no se reintenta— y porque así queda cubierto CUALQUIER modelo
+    retirado, incluidos los que se retiren después de esta versión del kit
+    (scripts/lib/models.py solo conoce los de la lista).
+    """
+    if getattr(exc, "status_code", None) == 404:
+        return "model-not-found"
+    return type(exc).__name__
+
+
+def _stub_with_cause(selection, by_id, meta, cause, diag=None):
     """Cae a stub PERO registra la causa (operabilidad: no ocultar el error)."""
     ed = compose_stub(selection, by_id, meta)
     ed["_compose_error"] = cause
+    if diag is not None:
+        diag["cause"] = cause
     return ed
 
 
-def compose(selection: dict, by_id: dict, meta: dict, config: dict, root: str = ".") -> dict:
+def compose(selection: dict, by_id: dict, meta: dict, config: dict, root: str = ".",
+            diag: dict = None) -> dict:
     """Redacta con LLM si hay ANTHROPIC_API_KEY; si no, stub (sin error). Si falla la
-    llamada, stub PERO con la causa registrada en `_compose_error`."""
+    llamada, stub PERO con la causa registrada en `_compose_error`.
+
+    `diag` (opcional): si se pasa un dict, se rellena con telemetría de la llamada real
+    (`model`, `stop_reason`, `usage`, `cause`) para diagnóstico (p. ej. `doctor --smoke`).
+    """
     if not os.environ.get("ANTHROPIC_API_KEY"):
         return compose_stub(selection, by_id, meta)   # sin clave: stub normal, no es error
     try:
         import anthropic  # type: ignore
     except ImportError:
-        return _stub_with_cause(selection, by_id, meta, "sdk-missing")
+        return _stub_with_cause(selection, by_id, meta, "sdk-missing", diag)
 
     ccfg = config.get("compose", {})
     model = ccfg.get("model", "claude-sonnet-5")
-    max_tokens = ccfg.get("max_tokens", 8000)   # holgura: Sonnet 5 usa thinking + respuesta
+    max_tokens = ccfg.get("max_tokens", 8000)
+    # Sonnet 5 corre 'thinking' ADAPTATIVO por defecto y lo descuenta de `max_tokens`: si el
+    # razonamiento agota el presupuesto, el JSON llega TRUNCADO y caería a stub sin causa clara.
+    # Para una redacción JSON determinista no necesitamos razonamiento: lo desactivamos y damos
+    # todo `max_tokens` a la salida. El operador puede forzar 'adaptive' con compose.thinking.
+    thinking = ccfg.get("thinking", "disabled")
     system = _load_system(config, root)
     items = _build_items(selection, by_id)
     user = (
@@ -171,15 +203,27 @@ def compose(selection: dict, by_id: dict, meta: dict, config: dict, root: str = 
         "source_refs deben salir de source_ids del input. No inventes fuentes, cifras ni historias.\n"
         "<untrusted_sources>\n" + json.dumps(items, ensure_ascii=False) + "\n</untrusted_sources>"
     )
+    kwargs = {"model": model, "max_tokens": max_tokens, "system": system,
+              "messages": [{"role": "user", "content": user}]}
+    if thinking in ("disabled", "adaptive"):
+        kwargs["thinking"] = {"type": thinking}
+    if diag is not None:
+        diag.update(model=model, thinking=thinking)
     try:
         client = anthropic.Anthropic()
-        resp = client.messages.create(
-            model=model, max_tokens=max_tokens, system=system,
-            messages=[{"role": "user", "content": user}],
-        )
+        resp = client.messages.create(**kwargs)
+        if diag is not None:
+            diag["stop_reason"] = getattr(resp, "stop_reason", None)
+            usage = getattr(resp, "usage", None)
+            if usage is not None:
+                diag["usage"] = {"input_tokens": getattr(usage, "input_tokens", None),
+                                 "output_tokens": getattr(usage, "output_tokens", None)}
+        # Truncado por límite de tokens → NO intentes parsear un JSON a medias: causa explícita.
+        if getattr(resp, "stop_reason", None) == "max_tokens":
+            return _stub_with_cause(selection, by_id, meta, "truncated", diag)
         text = "".join(getattr(b, "text", "") for b in resp.content
                        if getattr(b, "type", None) == "text")
         return assemble(_extract_json(text), selection, by_id, meta)
     except Exception as e:
         # cualquier fallo (red, cuota, parseo, validación) → nunca romper: stub CON causa.
-        return _stub_with_cause(selection, by_id, meta, type(e).__name__)
+        return _stub_with_cause(selection, by_id, meta, _cause_of(e), diag)

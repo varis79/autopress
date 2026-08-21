@@ -15,7 +15,7 @@
 El medio hace **una sola llamada al modelo por edición** (el resto —ingesta,
 clasificación, selección— es código gratis). Por eso es tan barato.
 
-| Modelo | Precio ($/1M tokens in · out) | Coste/edición | Coste/mes (semanal + teaser) |
+| Modelo | Precio ($/1M tokens in · out) | Coste/edición | Coste/mes (4-5 ediciones) |
 |---|---|---|---|
 | Haiku 4.5 | $1 / $5 | ~$0.05 | **~$0.30** |
 | Sonnet 5 | $3 / $15 | ~$0.14 | **~$0.73** |
@@ -37,9 +37,11 @@ El modelo se elige en tu config (`compose.model`). Empieza por uno **económico*
 `coste/edición ≈ (tokens_entrada × precio_in + tokens_salida × precio_out) / 1.000.000`
 
 - **Entrada**: la selección (unas 5-8 noticias resumidas) + el prompt maestro ≈ **1-3k tokens**.
-- **Salida**: la edición redactada, tope `compose.max_tokens` (por defecto **4.000**).
-- Con Sonnet 5 (~$3/$15 por 1M) eso da **~$0,05-0,14 por edición**. Multiplica por 4-5
-  ediciones/mes. Si añades un *teaser* para la newsletter, es **una llamada más** por envío.
+- **Salida**: la edición redactada, tope `compose.max_tokens` (por defecto **8.000**).
+  En modelos con razonamiento adaptativo ese tope se comparte con el *thinking*; compose lo
+  **desactiva por defecto** (`compose.thinking=disabled`) para dar todo el presupuesto a la redacción.
+- Con Sonnet 5 (~$3/$15 por 1M) eso da **~$0.05-0.14 por edición**. Multiplica por 4-5
+  ediciones/mes. Hoy es **1 llamada al LLM por edición** (sin llamadas extra).
 
 > **Ojo a dos cosas que cambian:** Sonnet 5 tiene **precio introductorio ($2/$10 hasta
 > 2026-08-31)**, luego sube; y los **IDs/precenios de modelo caducan** — verifica el vigente.

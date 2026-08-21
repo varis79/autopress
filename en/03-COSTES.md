@@ -15,7 +15,7 @@
 The outlet makes **a single model call per edition** (everything else — ingestion,
 classification, selection — is free code). That's why it's so cheap.
 
-| Model | Price ($/1M tokens in · out) | Cost/edition | Cost/month (weekly + teaser) |
+| Model | Price ($/1M tokens in · out) | Cost/edition | Cost/month (4-5 editions) |
 |---|---|---|---|
 | Haiku 4.5 | $1 / $5 | ~$0.05 | **~$0.30** |
 | Sonnet 5 | $3 / $15 | ~$0.14 | **~$0.73** |
@@ -37,9 +37,11 @@ one (Sonnet or Haiku) and only move up if you feel the writing calls for it.
 `cost/edition ≈ (input_tokens × price_in + output_tokens × price_out) / 1,000,000`
 
 - **Input**: the selection (about 5-8 summarized news items) + the master prompt ≈ **1-3k tokens**.
-- **Output**: the written edition, capped at `compose.max_tokens` (default **4,000**).
+- **Output**: the written edition, capped at `compose.max_tokens` (default **8,000**).
+  On models with adaptive reasoning that cap is shared with *thinking*; compose **disables it
+  by default** (`compose.thinking=disabled`) so the whole budget goes to the writing.
 - With Sonnet 5 (~$3/$15 per 1M) that gives **~$0.05-0.14 per edition**. Multiply by 4-5
-  editions/month. If you add a *teaser* for the newsletter, that's **one more call** per send.
+  editions/month. Today it's **1 LLM call per edition** (no extra calls).
 
 > **Watch two things that change:** Sonnet 5 has an **introductory price ($2/$10 until
 > 2026-08-31)**, then it goes up; and **model IDs/prices expire** — check the current one.

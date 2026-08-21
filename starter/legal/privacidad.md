@@ -17,6 +17,10 @@ domicilio en <DOMICILIO_O_PAIS> y correo de contacto **<EMAIL_CONTACTO>**.
   enviarte el boletín. No pedimos más datos.
 - **Datos técnicos mínimos** que genera cualquier visita (dirección IP, tipo de navegador)
   en los registros del **host**. No usamos analítica invasiva ni perfilado publicitario.
+- **Enlaces de confirmación/baja:** llevan un token firmado que **incluye tu email codificado
+  (base64, no cifrado)**. Como es un enlace, tu email puede quedar en los registros del host o
+  en la cabecera `Referer` al hacer clic. No lo compartimos; se usa solo para confirmar o dar
+  de baja tu suscripción.
 
 No vendemos tus datos ni los cedemos, salvo a los proveedores necesarios para prestar el
 servicio (abajo) o por obligación legal.

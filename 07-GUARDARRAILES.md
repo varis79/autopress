@@ -7,7 +7,7 @@
 
 | Regla | Cómo se garantiza |
 |---|---|
-| **No inventar cifras** | QA bloquea la edición si un número de la redacción no aparece en su fuente (`numbers_supported`). |
+| **No inventar cifras** | QA bloquea la edición si un número de la redacción (incluidos los de un dígito: muertos, %, conteos) no aparece en su fuente (`numbers_supported`). |
 | **Procedencia real** | La IA solo devuelve `ref_id`; el código copia la URL. Cita ajena o inventada → descartada. |
 | **Anti-inyección** | El contenido RSS va delimitado y con `<`/`>` escapados: una fuente no puede dar órdenes. |
 | **Sin esquemas activos** | Solo URLs http/https en enlaces (nada de `javascript:`). |
@@ -17,9 +17,12 @@
 
 | Perfil | Cuándo | Qué hace |
 |---|---|---|
-| `auto` | Nichos inocuos | Publica solo. |
+| `auto` | Nichos inocuos | Publica solo **SOLO si activas `publishing.allow_auto_index`** (opt-in explícito). Por defecto (`false`) la edición pasa igual por **revisión humana** antes de indexarse. |
 | `review` (**default**) | La mayoría | Genera la edición y **abre PR**: la revisas y haces merge. |
 | `strict` | Sensibles (salud, política, personas) | + **≥2 fuentes independientes** por historia (QA bloquea si no) + revisión obligatoria. |
+
+> **Review-first por defecto:** ni siquiera `auto` indexa sin `publishing.allow_auto_index=true`.
+> Es a propósito: nada llega a Google sin tu visto bueno mientras no lo actives.
 
 ## Política editorial (recomendada)
 

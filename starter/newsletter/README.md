@@ -6,6 +6,10 @@ Las funciones ya están escritas en **`functions/api/`** (Cloudflare Pages Funct
 **Tú solo activas la newsletter y pegas tus claves.** El formulario del sitio ya apunta a
 `/api/subscribe`.
 
+> **Alcance honesto:** el **alta con confirmación, el alta en Resend y la baja** están
+> automatizados. El **envío de la edición cada semana es MANUAL hoy** (lo haces desde Resend →
+> Broadcasts, ver abajo). El envío automático llegará en una versión futura.
+
 ## Puesta en marcha (para no técnicos)
 
 1. **Activa la newsletter** en tu config: `"newsletter": { "enabled": true }`.
@@ -21,8 +25,11 @@ Las funciones ya están escritas en **`functions/api/`** (Cloudflare Pages Funct
    | `NEWSLETTER_SECRET` | Firma los enlaces (larga y aleatoria) | genera una: `openssl rand -hex 32` |
    | `NEWSLETTER_FROM` | Remitente, p. ej. `Boletín <hola@tudominio.com>` | tu dominio verificado |
    | `SITE_URL` | La URL de tu sitio, p. ej. `https://tudominio.com` | tu dominio |
+   | `NEWSLETTER_LANG` | Idioma de los correos: `es` o `en` (opcional, por defecto `es`) | tú |
+   | `TURNSTILE_SECRET_KEY` | Anti-bot (recomendado): si la pones, el alta EXIGE pasar Turnstile | Cloudflare → Turnstile |
+   | `SUBS_KV` *(binding KV)* | Rate-limit por IP del alta (opcional) | Pages → Functions → KV bindings |
 4. **Redespliega**. Listo: el formulario ya funciona (alta → email de confirmación → clic →
-   suscrito).
+   suscrito). Con `TURNSTILE_SECRET_KEY` puesta, añade el widget de Turnstile al formulario.
 
 ## Enviar el boletín cada semana
 Dos opciones:

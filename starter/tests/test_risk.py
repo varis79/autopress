@@ -45,6 +45,14 @@ class RiskTest(unittest.TestCase):
         chk = next(c for c in qa(ed)["checks"] if c["name"] == "sensitive_support")
         self.assertTrue(chk["ok"])
 
+    def test_hedge_word_is_not_attribution(self):
+        # 'presunto' es un hedge, no una fuente: cierra la circularidad (la acusación no se
+        # auto-atribuye). Sin marca de fuente real, NO pasa aunque tenga 2 fuentes independientes.
+        self.assertFalse(risk.has_attribution("El presunto fraude arruinó a familias"))
+        ed = _ed("Caso", "El presunto fraude de la constructora arruinó a familias", TWO_INDEP)
+        chk = next(c for c in qa(ed)["checks"] if c["name"] == "sensitive_support")
+        self.assertFalse(chk["ok"])
+
     def test_non_allegation_is_fine(self):
         ed = _ed("Lanzamiento", "La empresa presentó un coche eléctrico", ONE)
         chk = next(c for c in qa(ed)["checks"] if c["name"] == "sensitive_support")

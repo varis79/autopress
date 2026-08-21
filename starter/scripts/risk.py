@@ -41,9 +41,13 @@ _LABELS = {
               "reportedly", "al parecer", "sources say", "fuentes dicen", "supposedly"],
 }
 
-_ATTRIBUTION = ["según", "de acuerdo con", "according to", "alleged", "allegedly", "presunt",
-                "denunci", "acus", "reportedly", "al parecer", "sources say", "fuentes",
-                "afirma", "asegura", "sostiene", "claims", "said"]
+# Atribución = APUNTAR A UNA FUENTE, no adjetivar la propia acusación. Por eso NO valen aquí
+# 'presunto/alleged' (hedge sin fuente) ni 'acusa/denuncia' (son los propios disparadores de la
+# etiqueta `allegation`): usarlos como atribución hacía el guardarraíl circular ("El presunto
+# fraude…" se auto-atribuía). Solo cuentan marcas que nombran o citan a alguien.
+_ATTRIBUTION = ["según", "de acuerdo con", "according to", "reportedly", "al parecer",
+                "sources say", "fuentes", "afirma", "afirmó", "asegura", "aseguró",
+                "sostiene", "sostuvo", "informa", "informó", "claims", "said"]
 
 # Etiquetas que, sin atribución + corroboración, NO deben publicarse.
 BLOCKING_LABELS = {"allegation"}

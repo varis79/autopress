@@ -2,8 +2,13 @@
 
 El envío de correo (Resend) y el endpoint HTTP son específicos del host; lo que vive
 aquí es la LÓGICA DE SEGURIDAD, reproducible y testeable: firmar y verificar tokens para
-que **nadie pueda dar de alta/baja a terceros** ni falsificar una confirmación
-(anti *subscription bombing*, sin `?email=` en plano).
+que **nadie pueda dar de alta/baja a terceros** en la LISTA ni falsificar una confirmación.
+
+Alcance honesto: el token EVITA meter/sacar a terceros de la audiencia, pero por sí solo
+NO frena el *email-bombing* (mandar confirmaciones a direcciones ajenas): eso lo cierran el
+rate-limit + Turnstile del endpoint (`functions/api/subscribe.js`). Además el `<email>` va
+firmado pero en **base64 (no cifrado)** dentro del token, así que puede quedar en logs del
+host o en cabeceras Referer (ver `legal/privacidad.md`).
 
 Token = base64url(payload) + "." + base64url(hmac_sha256(secret, payload))
 payload = "<action>:<email>:<exp_epoch>"

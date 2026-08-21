@@ -7,7 +7,7 @@
 
 | Rule | How it's guaranteed |
 |---|---|
-| **No made-up figures** | QA blocks the edition if a number in the copy doesn't appear in its source (`numbers_supported`). |
+| **No made-up figures** | QA blocks the edition if a number in the copy (single digits too: deaths, %, counts) doesn't appear in its source (`numbers_supported`). |
 | **Real provenance** | The AI only returns a `ref_id`; the code copies the URL. A third-party or made-up citation → discarded. |
 | **Anti-injection** | RSS content is delimited and with `<`/`>` escaped: a source can't issue commands. |
 | **No active schemes** | Only http/https URLs in links (no `javascript:`). |
@@ -17,9 +17,12 @@
 
 | Profile | When | What it does |
 |---|---|---|
-| `auto` | Harmless niches | Publishes on its own. |
+| `auto` | Harmless niches | Publishes on its own **only if you enable `publishing.allow_auto_index`** (explicit opt-in). By default (`false`) the edition still goes through **human review** before being indexed. |
 | `review` (**default**) | Most cases | Generates the edition and **opens a PR**: you review it and merge. |
 | `strict` | Sensitive topics (health, politics, people) | + **≥2 independent sources** per story (QA blocks if not) + mandatory review. |
+
+> **Review-first by default:** even `auto` won't index without `publishing.allow_auto_index=true`.
+> That's deliberate: nothing reaches Google without your sign-off until you turn it on.
 
 ## Editorial policy (recommended)
 

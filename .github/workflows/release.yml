@@ -27,9 +27,12 @@ jobs:
       - name: Instalar dependencias del starter
         run: python -m pip install -r starter/requirements.txt
 
-      - name: Tests (65+) dentro del starter
+      - name: Tests del starter
         working-directory: starter
         run: PYTHONPATH=. python -m unittest discover tests
+
+      - name: Verificar empaquetado (0 'cd starter' en el template)
+        run: python pack.py "/tmp/autopress-check" && ! grep -rq "cd starter" "/tmp/autopress-check"
 
       - name: Empaquetar el template (ZIP versionado)
         run: python pack.py "autopress-${GITHUB_REF_NAME}"

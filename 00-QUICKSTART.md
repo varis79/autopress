@@ -45,7 +45,7 @@ cuando quieras, sin rehacer nada:
 
 ## Paso 0 · Consigue el kit y ábrelo con tu agente
 
-Descarga el kit (ZIP desde la web, o "Use this template" en GitHub) y ábrelo con tu
+Descarga el kit (ZIP desde `/releases/latest`) y ábrelo con tu
 agente de IA. Lo primero que hará el agente es leer **`AGENTS.md`**, el archivo de
 entrada.
 
@@ -184,20 +184,24 @@ no incluye `"stub"`**, y cada historia lleva sus **fuentes numeradas `[1][2]`** 
 al original.
 **🔧 Si algo falla con la IA** (clave inválida, sin saldo, sin red): el sistema
 **vuelve solo al modo stub** — no se rompe. Revisa la clave y el saldo.
+> **Terminal nueva = reactiva el entorno.** Si abres otra terminal, vuelve a activar el
+> venv (`. .venv/bin/activate`) antes de correr el pipeline: sin él falta el paquete
+> `anthropic` y la edición **cae a stub aunque tu clave sea válida**. Comprueba en vivo con
+> `PYTHONPATH=. python3 -m scripts.doctor --smoke` (hace 1 llamada real y avisa si algo falla).
 
 > **De la demo a TUS noticias reales.** Sin más, el pipeline redacta la selección de
 > **demo** (los fixtures) para que compruebes el circuito. Para noticias reales de tu tema,
 > añade tus **feeds RSS** al config (bloque `sources`, ver `starter/autopress.schema.json`)
 > y apunta el pipeline a tu propia config:
 > ```bash
-> PYTHONPATH=. python3 -m scripts.pipeline --config mi-config.json
+> PYTHONPATH=. python3 -m scripts.pipeline --config config.json
 > ```
 > Con `sources`, el pipeline **ingiere de la red** (con timeout, reintentos y diagnóstico
 > por fuente) en vez de los fixtures. Y para la versión **indexable** (no preview) se corre
 > en producción, que **no publica** si la edición es stub, está en pausa o QA la bloquea
 > (sale con código ≠ 0):
 > ```bash
-> PYTHONPATH=. python3 -m scripts.pipeline --config mi-config.json --production
+> PYTHONPATH=. python3 -m scripts.pipeline --config config.json --production
 > ```
 
 ---

@@ -15,6 +15,7 @@ import shutil
 
 from scripts.lib.site import (
     render_edition_page, render_archive_page, render_sitemap, render_rss,
+    render_robots, render_static_page, about_content, methodology_content, sources_content,
 )
 from scripts import legal
 
@@ -86,23 +87,46 @@ def publish(edition: dict, config: dict, out_dir: str, production: bool = False,
     # 3. Permalink de cada edición (indexable según SU estado). Se LIMPIA magazines/ antes,
     #    así una edición retirada del store desaparece del sitio (no quedan huérfanas).
     shutil.rmtree(os.path.join(out_dir, "magazines"), ignore_errors=True)
-    for e in all_eds:
+    n = len(all_eds)
+    for i, e in enumerate(all_eds):
         url = f"/magazines/{_slug(e)}.html"
+        # all_eds va de más nueva a más antigua: prev = la más antigua (i+1), next = la más nueva (i-1).
+        prev_href = f"/magazines/{_slug(all_eds[i + 1])}.html" if i + 1 < n else ""
+        next_href = f"/magazines/{_slug(all_eds[i - 1])}.html" if i > 0 else ""
         _write(os.path.join(out_dir, "magazines", f"{_slug(e)}.html"),
                render_edition_page(e, canonical=base + url, config=config, css=css,
-                                   indexable=_indexable(e, production)))
+                                   indexable=_indexable(e, production),
+                                   prev_href=prev_href, next_href=next_href))
 
-    # 4. Home = edición más reciente.
+    # 4. Home = edición más reciente (su 'anterior' es la 2ª más nueva; no tiene 'siguiente').
     home = all_eds[0]
+    home_prev = f"/magazines/{_slug(all_eds[1])}.html" if n > 1 else ""
     _write(os.path.join(out_dir, "index.html"),
            render_edition_page(home, canonical=base + "/", config=config, css=css,
-                               indexable=_indexable(home, production)))
+                               indexable=_indexable(home, production), prev_href=home_prev))
 
     # 5. Archivo (índice; noindex salvo que se decida indexar el índice).
     metas = [_meta(e, site) for e in all_eds]
     _write(os.path.join(out_dir, "archive.html"),
            render_archive_page(metas, canonical=base + "/archive.html", config=config,
                                css=css, indexable=False))
+
+    # 5b. Páginas E-E-A-T (evergreen; deterministas desde config). URLs estables (i18n en el
+    #     texto, no en la ruta); indexables en producción como señal de confianza para Google.
+    lang = site.get("language", "es")
+    eeat_pages = [
+        ("about.html", "about", about_content(config, lang)),
+        ("methodology.html", "method", methodology_content(config, lang)),
+        ("sources.html", "sources", sources_content(config, lang)),
+    ]
+    for fname, active, (ptitle, pdesc, pbody) in eeat_pages:
+        _write(os.path.join(out_dir, fname),
+               render_static_page(body=pbody, title=ptitle, description=pdesc,
+                                  canonical=f"{base}/{fname}", config=config, css=css,
+                                  active=active, indexable=production))
+
+    # 5c. robots.txt: producción invita a rastrear + apunta al sitemap; preview lo bloquea todo.
+    _write(os.path.join(out_dir, "robots.txt"), render_robots(base, production))
 
     # 6. Sitemap SOLO con páginas approved & indexables (nada de borradores noindex).
     indexable_eds = [e for e in all_eds if _indexable(e, production)]
@@ -111,6 +135,8 @@ def publish(edition: dict, config: dict, out_dir: str, production: bool = False,
         latest = indexable_eds[0].get("date", "")
         entries = ([("/", latest)]
                    + [(f"/magazines/{_slug(e)}.html", e.get("date", "")) for e in indexable_eds])
+    if production:   # las páginas E-E-A-T son evergreen: al sitemap aunque no haya edición approved
+        entries += [("/about.html", None), ("/methodology.html", None), ("/sources.html", None)]
     _write(os.path.join(out_dir, "sitemap.xml"), render_sitemap(base, entries))
 
     # 7. RSS: SOLO ediciones aprobadas (un borrador needs_review no es público).
@@ -123,4 +149,5 @@ def publish(edition: dict, config: dict, out_dir: str, production: bool = False,
     return {"out_dir": out_dir, "edition_url": f"/magazines/{_slug(edition)}.html",
             "editions_total": len(all_eds), "indexable_total": len(indexable_eds),
             "files": ["index.html", f"magazines/{_slug(edition)}.html", "archive.html",
-                      "sitemap.xml", "rss.xml"]}
+                      "about.html", "methodology.html", "sources.html",
+                      "robots.txt", "sitemap.xml", "rss.xml"]}

@@ -96,18 +96,24 @@ def build(dest: str):
     if os.path.isdir(os.path.join(ROOT, "en")):
         shutil.copytree(os.path.join(ROOT, "en"), os.path.join(dest, "en"))
 
-    # reescribir enlaces según la profundidad del fichero
+    # reescribir según el tipo de fichero: .md (enlaces + comandos) y .py (comandos en
+    # docstrings/comentarios — en el template la raíz ES el starter, no hay `cd starter`).
     for cur, _dirs, files in os.walk(dest):
         for name in files:
-            if not name.endswith(".md"):
-                continue
             path = os.path.join(cur, name)
-            with open(path, encoding="utf-8") as f:
-                txt = f.read()
-            at_root = (os.path.dirname(path) == dest)
-            new = _rewrite_root(txt) if at_root else _rewrite_subdir(txt)
-            new = _strip_excluded_links(new)
-            new = _rewrite_commands(new)   # comandos/paths: sin `cd starter` ni `starter/`
+            if name.endswith(".md"):
+                with open(path, encoding="utf-8") as f:
+                    txt = f.read()
+                at_root = (os.path.dirname(path) == dest)
+                new = _rewrite_root(txt) if at_root else _rewrite_subdir(txt)
+                new = _strip_excluded_links(new)
+                new = _rewrite_commands(new)
+            elif name.endswith(".py"):
+                with open(path, encoding="utf-8") as f:
+                    txt = f.read()
+                new = _rewrite_commands(txt)   # solo comandos/rutas en docstrings y comentarios
+            else:
+                continue
             if new != txt:
                 with open(path, "w", encoding="utf-8") as f:
                     f.write(new)
@@ -120,7 +126,25 @@ def build(dest: str):
         lt = lt.replace("bajo `starter/`", "en la raíz del proyecto").replace("starter/", "")
         with open(lic, "w", encoding="utf-8") as f:
             f.write(lt)
+    _assert_flattened(dest)
     return dest
+
+
+def _assert_flattened(dest: str):
+    """Invariante del template (CLAUDE.md): en la raíz-es-starter NO puede sobrevivir ningún
+    `cd starter`. Falla el empaquetado si queda alguno, en cualquier tipo de fichero."""
+    offenders = []
+    for cur, _dirs, files in os.walk(dest):
+        for name in files:
+            path = os.path.join(cur, name)
+            try:
+                with open(path, encoding="utf-8") as f:
+                    if "cd starter" in f.read():
+                        offenders.append(os.path.relpath(path, dest))
+            except (UnicodeDecodeError, OSError):
+                continue
+    if offenders:
+        raise SystemExit("pack.py: quedan 'cd starter' en el template: " + ", ".join(offenders))
 
 
 def main(argv):

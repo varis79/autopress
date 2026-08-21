@@ -16,7 +16,7 @@ IA. En español y English ([START-HERE.md](en/START-HERE.md)).
   se avanza igual (ver niveles en [00-QUICKSTART.md](00-QUICKSTART.md)).
 
 ## Cómo empezar (2 pasos)
-1. **Descarga el kit** (o "Use this template" en GitHub) y ábrelo con tu agente de código.
+1. **Descarga el kit** (ZIP desde `/releases/latest`) y ábrelo con tu agente de código.
 2. **Pega este prompt de inicio:**
 
 ```
